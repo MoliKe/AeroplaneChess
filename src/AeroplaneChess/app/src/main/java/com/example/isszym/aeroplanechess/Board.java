@@ -31,6 +31,7 @@ public class Board {
         this.diceView = diceView;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.status = Commdef.GAME_NOT_START;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
         System.out.println("boardLength");
@@ -63,6 +64,7 @@ public class Board {
     }
 
     public void gameStart(Context context){
+        status = Commdef.GAME_START;
         // 还原飞机位置
         for (int i : Commdef.COLOR_PLANE[turn]) {
             planes[i].restore();
@@ -76,6 +78,7 @@ public class Board {
         params.width = (int)(Commdef.DICE_GRID_NUM*gridLength);
         params.height = (int)(Commdef.DICE_GRID_NUM*gridLength);
         diceView.setLayoutParams(params);
+        diceView.setText("骰子?");
         beginTurn();
     }
 
@@ -120,6 +123,7 @@ public class Board {
                 }
                 if(ableToTakeOff){
 //                    diceView.setClickable(false);
+                    Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                     for (int i : Commdef.COLOR_PLANE[turn]) {
                         planes[i].setListner(diceNumber);
                     }
@@ -129,6 +133,7 @@ public class Board {
                         Toast.makeText(context, "无法起飞", Toast.LENGTH_SHORT).show();
                     }
                     else{
+                        Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                         for(Integer i : outsidePlanes){
                             planes[i].setListner(diceNumber);
                         }
