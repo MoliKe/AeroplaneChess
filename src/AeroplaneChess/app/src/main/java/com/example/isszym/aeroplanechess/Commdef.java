@@ -39,6 +39,11 @@ public class Commdef {
     public static final int GAME_START = 1;
     public static final int GAME_END = 2;
 
+    // 飞机状态
+    public static final int WAITING = 0;
+    public static final int FLYING = 1;
+    public static final int FINISHED = 2;
+
     // 飞行棋所有能到达的位置,{a,b}表示位置左上角在x方向下标为a的格，y方向下标为b的格，一共97个位置，按下列顺序编号
     public static final int[][] POSITIONS = {
             {3,29}, {3,31}, {5,29}, {5,31}, {9,33},        // 蓝方机场及出发点

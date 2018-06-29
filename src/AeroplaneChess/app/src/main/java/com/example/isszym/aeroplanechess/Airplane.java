@@ -25,6 +25,7 @@ public class Airplane {
         this.number = number;
         this.portIndex = index;
         this.index = index;
+        this.status = Commdef.WAITING;
         this.gridLength = gridLength;
         this.xOffset = xOffset;
         this.yOffset = yOffset;
@@ -42,6 +43,7 @@ public class Airplane {
     public void receiveDiceNumber(int diceNumber){
         if(isInAirport()) steps = 1;
         else steps = diceNumber;
+        status = Commdef.FLYING;
         moveSteps();
     }
 
@@ -74,14 +76,7 @@ public class Airplane {
 
     // 此飞机是否在机场
     public boolean isInAirport(){
-        boolean flag = false;
-        for(int port : Commdef.COLOR_AIRPORT[camp]){
-            if(port == index){
-                flag = true;
-                break;
-            }
-        }
-        if(flag) return true;
+        if(status == Commdef.WAITING) return true;
         else return false;
     }
 
@@ -105,6 +100,7 @@ public class Airplane {
 
     public void restore(){
         index = portIndex;
+        status = Commdef.WAITING;
         curStep = -1;
         ViewGroup.LayoutParams params = planeView.getLayoutParams();
         params.width = (int)(2*gridLength);
