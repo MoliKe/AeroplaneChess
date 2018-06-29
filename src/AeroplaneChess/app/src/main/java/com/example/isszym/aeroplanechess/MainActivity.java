@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView boardView;
     private ImageView[] planeViews;
     private TextView diceView;
+    private TextView[] playerViews;
     private float screenWidth;
     private float screenHeight;
 
@@ -34,8 +35,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         boardView = (ImageView)findViewById(R.id.board);
         diceView = (TextView)findViewById(R.id.dice);
+        playerViews = new TextView[4];
+        playerViews[0] = (TextView)findViewById(R.id.bluePlayer);
+        playerViews[1] = (TextView)findViewById(R.id.greenPlayer);
+        playerViews[2] = (TextView)findViewById(R.id.redPlayer);
+        playerViews[3] = (TextView)findViewById(R.id.yellowPlayer);
+
         screenWidth = getScreenW(getApplicationContext());
         screenHeight = getScreenH(getApplicationContext());
+
         chessboard = new Board(boardView, diceView, screenWidth, screenHeight);
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
@@ -60,8 +68,17 @@ public class MainActivity extends AppCompatActivity {
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
             @Override
             public void onGlobalLayout() {
-                chessboard.setXOffset(chessboard.getBoardView().getLeft());
-                chessboard.setYOffset(chessboard.getBoardView().getTop());
+                float xOffSet = chessboard.getBoardView().getLeft();
+                float yOffSet = chessboard.getBoardView().getTop();
+                for(int i = 0; i < 4; i++){
+                    ViewGroup.LayoutParams params = playerViews[i].getLayoutParams();
+                    params.width = (int)(screenWidth / 3);
+                    params.height = (int)(yOffSet);
+                    playerViews[i].setLayoutParams(params);
+                }
+                chessboard.setXOffset(xOffSet);
+                chessboard.setYOffset(yOffSet);
+
                 chessboard.initPlanes(planeViews);
 
 //                final Handler mHandler = new Handler();

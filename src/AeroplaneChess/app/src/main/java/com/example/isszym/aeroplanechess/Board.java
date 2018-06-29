@@ -1,10 +1,13 @@
 package com.example.isszym.aeroplanechess;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.app.INotificationSideChannel;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +26,8 @@ public class Board {
     private Context context;
     private ImageView boardView;
     private TextView diceView;
+    private int diceNumber;
+    private int selectPlane;    // 点击移动的飞机
     private ArrayList<Integer>[] positions;
     private Airplane[] planes;
 
@@ -102,13 +107,13 @@ public class Board {
             @Override
             public void onClick(View v) {
                 Random rand = new Random();
-                final int diceNumber = rand.nextInt(6) + 1;
+                diceNumber = rand.nextInt(6) + 1;
                 diceView.setText(String.valueOf(diceNumber));
                 ArrayList<Integer> outsidePlanes = new ArrayList<Integer>();
                 // 是否全在机场
                 boolean isAllInAirport = true;
-                for(int i : Commdef.COLOR_PLANE[turn]){
-                    if(!planes[i].isInAirport()) {
+                for (int i : Commdef.COLOR_PLANE[turn]) {
+                    if (!planes[i].isInAirport()) {
                         isAllInAirport = false;
                         outsidePlanes.add(i);
                     }
@@ -116,40 +121,45 @@ public class Board {
                 // 是否是起飞的点数
                 boolean ableToTakeOff = false;
                 for (int each : Commdef.TAKE_OFF_NUMBER) {
-                    if (each == diceNumber){
+                    if (each == diceNumber) {
                         ableToTakeOff = true;
                         break;
                     }
                 }
-                if(ableToTakeOff){
+                if (ableToTakeOff) {
 //                    diceView.setClickable(false);
                     Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                     for (int i : Commdef.COLOR_PLANE[turn]) {
                         planes[i].setListner(diceNumber);
                     }
-                }
-                else{
-                    if(isAllInAirport){
+                } else {
+                    if (isAllInAirport) {
                         Toast.makeText(context, "无法起飞", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
-                        for(Integer i : outsidePlanes){
+                        for (Integer i : outsidePlanes) {
                             planes[i].setListner(diceNumber);
                         }
                         outsidePlanes.clear();
                     }
                 }
-
+                turn = (turn + 1) % 4;
+                beginTurn();
             }
         });
-
     }
 
     public ImageView getBoardView() {
         return boardView;
     }
 
+    public float getXFromIndex(int index){
+        return xOffset + gridLength * Commdef.POSITIONS[index][0];
+    }
+
+    public float getYFromIndex(int index){
+        return yOffset + gridLength * Commdef.POSITIONS[index][1];
+    }
 
     public float getGridLength() {
         return gridLength;

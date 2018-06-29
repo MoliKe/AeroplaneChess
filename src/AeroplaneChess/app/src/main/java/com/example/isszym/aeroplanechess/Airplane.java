@@ -113,17 +113,49 @@ public class Airplane {
     public int getCamp() {
         return camp;
     }
-
     public int getNumber() {
         return number;
     }
-
+    public int getPortIndex(){
+        return portIndex;
+    }
     public int getIndex(){
         return index;
     }
-
+    public int getStatus(){
+        return status;
+    }
     public ImageView getPlaneView() { return planeView; }
+    public int getCurStep(){
+        return curStep;
+    }
+    public int getSteps(){
+        return steps;
+    }
 
-
+    public void setCamp(int camp) {
+        this.camp = camp;
+    }
+    public void setNumber(int number) {
+        this.number = number;
+    }
+    public void setPortIndex(int portIndex){
+        this.portIndex = portIndex;
+    }
+    public void setIndex(int index){
+        this.index = index;
+    }
+    public void setStatus(int status){
+        this.status = status;
+    }
+    public void setPlaneView(ImageView planeView) {
+        this.planeView = planeView;
+    }
+    public void setCurStep(int curStep){
+        this.curStep = curStep;
+    }
+    public void setSteps(int steps){
+        this.steps = steps;
+    }
 
 }
