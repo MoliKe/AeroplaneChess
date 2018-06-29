@@ -23,13 +23,6 @@
         android:textSize="24sp"
         android:text="RedPlayer"
         />
-    <ImageView
-        android:id="@+id/board"
-        android:layout_width="468dp"
-        android:layout_height="468dp"
-        android:layout_gravity="center"
-        android:background="@drawable/board"
-        />
     <TextView
         android:id="@+id/bluePlayer"
         android:layout_width="150dp"
@@ -49,6 +42,13 @@
         android:gravity="center"
         android:textSize="24sp"
         android:text="YellowPlayer"
+        />
+    <ImageView
+        android:id="@+id/board"
+        android:layout_width="468dp"
+        android:layout_height="468dp"
+        android:layout_gravity="center"
+        android:background="@drawable/board"
         />
     <ImageView
         android:id="@+id/bluePlane1"

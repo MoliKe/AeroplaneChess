@@ -44,7 +44,7 @@ public class Commdef {
     public static final int FLYING = 1;
     public static final int FINISHED = 2;
 
-    // 飞行棋所有能到达的位置,{a,b}表示位置左上角在x方向下标为a的格，y方向下标为b的格，一共97个位置，按下列顺序编号
+    // 飞行棋所有能到达的位置,{a,b}表示位置左上角在x方向下标为a，y方向下标为b的格，一共97个位置，按下列顺序编号
     public static final int[][] POSITIONS = {
             {3,29}, {3,31}, {5,29}, {5,31}, {9,33},        // 蓝方机场及出发点
             {3,3}, {3,5}, {5,3}, {5,5}, {1,9},             // 绿方机场及出发点
