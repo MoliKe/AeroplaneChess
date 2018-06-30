@@ -57,21 +57,34 @@ public class Airplane {
     public void setPath(int steps){
         path.clear();
         for(int i = 1; i <= steps; i++){
-            path.add(Commdef.COLOR_PATH[camp][curStep + i]);
-            if(i == steps){
-                int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
-                if(isJetGrid(mIndex) == -1){
-                    int jumpIndex = isSameColorGrid(mIndex);
-                    if(jumpIndex != -1){
-                        path.add(jumpIndex);
-                        if(isJetGrid(jumpIndex) != -1){
-                            path.add(isJetGrid(jumpIndex));
+            if(curStep + i >= Commdef.PATH_LENGTH){
+                path.add(Commdef.COLOR_PATH[camp][2*Commdef.PATH_LENGTH - curStep - i - 2]);
+                System.out.println(2 * Commdef.PATH_LENGTH - curStep - i - 2);
+            }
+            else{
+                path.add(Commdef.COLOR_PATH[camp][curStep + i]);
+                if(i == steps){
+                    // 最后一步是终点
+                    if(curStep + i == Commdef.PATH_LENGTH - 1){
+                        path.add(portIndex);
+                        status = Commdef.FINISHED;
+                    }
+                    else {
+                        // 最后一步是同色格子或大跳
+                        int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
+                        if (isJetGrid(mIndex) == -1) {
+                            int jumpIndex = isSameColorGrid(mIndex);
+                            if (jumpIndex != -1) {
+                                path.add(jumpIndex);
+                                if (isJetGrid(jumpIndex) != -1) {
+                                    path.add(isJetGrid(jumpIndex));
+                                }
+                            }
+                        } else {
+                            path.add(isJetGrid(mIndex));
+                            path.add(isSameColorGrid(isJetGrid(mIndex)));
                         }
                     }
-                }
-                else{
-                    path.add(isJetGrid(mIndex));
-                    path.add(isSameColorGrid(isJetGrid(mIndex)));
                 }
             }
         }
@@ -123,7 +136,7 @@ public class Airplane {
                         board.beginTurn();
                     }
                     else{
-                        board.setTurn((board.getTurn() + 1) % 4);
+                        board.setTurn((board.getTurn() + 1) % Commdef.PLAYER_NUM);
                         board.beginTurn();
                     }
                 }
@@ -134,10 +147,11 @@ public class Airplane {
 
     // 此飞机是否在机场
     public boolean isInAirport(){
-        if(status == Commdef.WAITING) return true;
+        if(status != Commdef.FLYING) return true;
         else return false;
     }
 
+    // 通过index获取在自己路径上的下标
     public int getStepFromIndex(int index){
         int step = -1;
         for(int i = 0; i < Commdef.COLOR_PATH[camp].length; i++){
@@ -158,6 +172,7 @@ public class Airplane {
     }
 
     public void setListner(final int diceNumber){
+        if(status == Commdef.FINISHED) return;
         planeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -21,6 +21,8 @@ public class Commdef {
             {12, 13, 14, 15}    // 黄
     };
 
+    public static final int PLAYER_NUM = 4;
+
 
     // 飞机数目
     public static int TOTAL_PLANE_NUM = 16;
@@ -160,5 +162,8 @@ public class Commdef {
             38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
             54, 55, 56, 90, 91, 92, 93, 94, 95, 96}
     };
+
+    // 各种颜色路径的长度
+    public static final int PATH_LENGTH = 58;
 
 }

@@ -27,7 +27,6 @@ public class Board {
     private ImageView boardView;
     private TextView diceView;
     private int diceNumber;
-    private int selectPlane;    // 点击移动的飞机
     private ArrayList<Integer>[] positions;
     private Airplane[] planes;
 
@@ -128,22 +127,23 @@ public class Board {
                     }
                 }
                 if (ableToTakeOff) {
-                    Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
+                    showInfo("飞");
                     for (int i : Commdef.COLOR_PLANE[turn]) {
-                        planes[i].setListner(diceNumber);
+                        if(planes[i].getStatus() != Commdef.FINISHED)
+                            planes[i].setListner(diceNumber);
                     }
                 } else {
                     if (isAllInAirport) {
-                        Toast.makeText(context, "无法起飞", Toast.LENGTH_SHORT).show();
+                        showInfo("无法起飞");
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
-                                turn = (turn + 1) % 4;
+                                turn = (turn + 1) % Commdef.PLAYER_NUM;
                                 beginTurn();
                             }
 
                         }, 1000);   // 等待一秒后执行
                     } else {
-                        Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
+                        showInfo("飞");
                         for (Integer i : outsidePlanes) {
                             planes[i].setListner(diceNumber);
                         }
@@ -158,6 +158,10 @@ public class Board {
         for(int i = 0; i < Commdef.TOTAL_PLANE_NUM; i++){
             planes[i].getPlaneView().setClickable(false);
         }
+    }
+
+    public void showInfo(String sentence){
+        Toast.makeText(context, sentence, Toast.LENGTH_SHORT).show();
     }
 
     public int getDiceNumber(){
