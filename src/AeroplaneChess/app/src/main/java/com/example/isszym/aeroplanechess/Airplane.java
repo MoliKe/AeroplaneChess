@@ -155,13 +155,7 @@ public class Airplane {
                     curStep = getStepFromIndex(index);
                     path.clear();
                     crackNum = 0;
-                    if(board.getDiceNumber() == 6){
-                        board.beginTurn();
-                    }
-                    else{
-                        board.setTurn((board.getTurn() + 1) % Commdef.PLAYER_NUM);
-                        board.beginTurn();
-                    }
+                    board.endTurn();
                 }
             }
         });

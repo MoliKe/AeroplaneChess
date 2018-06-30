@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView diceView;
     private TextView[] playerViews;
     private float screenWidth;
-    private float screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +41,8 @@ public class MainActivity extends AppCompatActivity {
         playerViews[3] = (TextView)findViewById(R.id.yellowPlayer);
 
         screenWidth = getScreenW(getApplicationContext());
-        screenHeight = getScreenH(getApplicationContext());
 
-        chessboard = new Board(boardView, diceView, screenWidth, screenHeight);
+        chessboard = new Board(boardView, diceView, screenWidth, getApplicationContext());
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
         planeViews[1] = (ImageView)findViewById(R.id.bluePlane2);
@@ -109,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case 1:
-                chessboard.gameStart(getApplicationContext());
+                chessboard.gameStart();
                 break;
             case 2:
                 break;

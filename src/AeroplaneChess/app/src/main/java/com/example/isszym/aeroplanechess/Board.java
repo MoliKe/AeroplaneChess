@@ -18,7 +18,7 @@ import java.util.Random;
 public class Board {
     private int status;         // 状态（游戏未开始，游戏已开始，游戏结束）
     private int turn;
-    private float screenWidth, screenHeight;
+    private float screenWidth;
     private float boardLength;
     private float gridLength;
     private float xOffset;      // 棋盘在屏幕X方向即右方向的偏移
@@ -27,21 +27,26 @@ public class Board {
     private ImageView boardView;
     private TextView diceView;
     private int diceNumber;
-    private ArrayList<Integer>[] positions;
     private Airplane[] planes;
+    private int winner;
 
-    Board(ImageView boardView, TextView diceView, float screenWidth, float screenHeight){
+    Board(ImageView boardView, TextView diceView, float screenWidth, Context context){
+        this.status = Commdef.GAME_NOT_START;
+        this.screenWidth = screenWidth;
         this.boardView = boardView;
         this.diceView = diceView;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-        this.status = Commdef.GAME_NOT_START;
+        this.context = context;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
         ViewGroup.LayoutParams boardParams = boardView.getLayoutParams();
         boardParams.width = (int)boardLength;
         boardParams.height = (int)boardLength;
         boardView.setLayoutParams(boardParams);
+        // 调整骰子大小
+        ViewGroup.LayoutParams params = diceView.getLayoutParams();
+        params.width = (int)(Commdef.DICE_GRID_NUM*gridLength);
+        params.height = (int)(Commdef.DICE_GRID_NUM*gridLength);
+        diceView.setLayoutParams(params);
     }
 
     public void initPlanes(ImageView[] planeViews){
@@ -65,22 +70,33 @@ public class Board {
         };
     }
 
-    public void gameStart(Context context){
+    public void gameStart(){
         status = Commdef.GAME_START;
         // 还原飞机位置
         for (Airplane plane : planes) {
             plane.restore();
         }
         // 随机决定哪方先开始
-        this.context = context;
         Random rand = new Random();
         turn = rand.nextInt(4);
-        // 调整骰子大小
-        ViewGroup.LayoutParams params = diceView.getLayoutParams();
-        params.width = (int)(Commdef.DICE_GRID_NUM*gridLength);
-        params.height = (int)(Commdef.DICE_GRID_NUM*gridLength);
-        diceView.setLayoutParams(params);
+        showInfo("就决定是你了, " + Commdef.campName[turn]);
+        winner = -1;
         beginTurn();
+    }
+
+    public void gameEnd(){
+        winner = turn;
+        showInfo("恭喜" + Commdef.campName[winner] + "获得胜利!!");
+        status = Commdef.GAME_END;
+    }
+
+    public boolean checkGameEnd(){
+        int finishPlaneNum = 0;
+        for(int i : Commdef.COLOR_PLANE[turn]){
+            if(planes[i].getStatus() == Commdef.FINISHED) finishPlaneNum++;
+        }
+        if(finishPlaneNum == 4) return true;
+        else return false;
     }
 
     public void beginTurn(){
@@ -152,9 +168,25 @@ public class Board {
         });
     }
 
+    public void endTurn(){
+        if(checkGameEnd()){
+            gameEnd();
+        }
+        else{
+            if(diceNumber == 6){
+                beginTurn();
+            }
+            else{
+                turn = (turn + 1) % Commdef.PLAYER_NUM;
+                beginTurn();
+            }
+        }
+    }
+
     public void sweepIndex(int index){
         for(Airplane plane : planes){
             if(plane.getIndex() == index && plane.getCamp() != turn){
+                showInfo("撞子啦");
                 plane.crackByPlane();
             }
         }
