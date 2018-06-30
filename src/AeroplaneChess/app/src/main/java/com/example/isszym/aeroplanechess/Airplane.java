@@ -8,6 +8,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Airplane {
     private Board board;                // 调用棋盘方法，是board的一个引用
@@ -42,6 +43,7 @@ public class Airplane {
         planeView.setLayoutParams(params);
         planeView.setX(getXFromIndex(index));
         planeView.setY(getYFromIndex(index));
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         planeView.setVisibility(View.VISIBLE);
     }
 
@@ -112,6 +114,7 @@ public class Airplane {
     public void move(){
         int preIndex = index;
         index = path.get(0);
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
         anim.setDuration(500);
         anim.setAnimationListener(new Animation.AnimationListener() {
