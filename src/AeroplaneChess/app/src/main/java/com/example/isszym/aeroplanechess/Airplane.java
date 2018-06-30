@@ -7,8 +7,10 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class Airplane {
-    private Board board;                // 与棋盘通信用，是board的一个引用
+    private Board board;                // 调用棋盘方法，是board的一个引用
     private int camp;                   // 飞机阵营
     private int number;                 // 飞机编号，0~15
     private int portIndex;              // 停机处
@@ -19,7 +21,7 @@ public class Airplane {
     private float yOffset;              // 棋盘在屏幕Y方向即下方向的偏移
     private ImageView planeView;        // 飞机的view
     private int curStep;                // 己方路径上当前下标
-    private int steps;                  // 需要走的步数
+    private ArrayList<Integer> path;    // 飞行棋要走的路径
 
     Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
         this.board = board;
@@ -33,6 +35,7 @@ public class Airplane {
         this.yOffset = yOffset;
         this.planeView = planeView;
         this.curStep = -1;
+        path = new ArrayList<Integer>();
         ViewGroup.LayoutParams params = planeView.getLayoutParams();
         params.width = (int)(2*gridLength);
         params.height = (int)(2*gridLength);
@@ -43,17 +46,61 @@ public class Airplane {
     }
 
     public void receiveDiceNumber(int diceNumber){
+        int steps;
         if(isInAirport()) steps = 1;
         else steps = diceNumber;
         status = Commdef.FLYING;
-        moveSteps();
+        setPath(steps);
+        move();
     }
 
-    public void moveSteps(){
+    public void setPath(int steps){
+        path.clear();
+        for(int i = 1; i <= steps; i++){
+            path.add(Commdef.COLOR_PATH[camp][curStep + i]);
+            if(i == steps){
+                int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
+                if(isJetGrid(mIndex) == -1){
+                    int jumpIndex = isSameColorGrid(mIndex);
+                    if(jumpIndex != -1){
+                        path.add(jumpIndex);
+                        if(isJetGrid(jumpIndex) != -1){
+                            path.add(isJetGrid(jumpIndex));
+                        }
+                    }
+                }
+                else{
+                    path.add(isJetGrid(mIndex));
+                    path.add(isSameColorGrid(isJetGrid(mIndex)));
+                }
+            }
+        }
+    }
+
+    // 判断参数index是不是同色的格子(除去最后一个)，若是则返回下一个同色格子的index，否则返回-1
+    public int isSameColorGrid(int index){
+        int result = -1;
+        for(int i = 0; i < Commdef.COLOR_GRID[camp].length; i++){
+            if(index == Commdef.COLOR_GRID[camp][i] && i != Commdef.COLOR_GRID[camp].length - 1){
+                result = Commdef.COLOR_GRID[camp][i+1];
+                break;
+            }
+        }
+        return result;
+    }
+
+    // 判断参数index是不是大跳的格子，若是则返回跳到格子的index，否则返回-1
+    public int isJetGrid(int index){
+        int result = -1;
+        if(index == Commdef.COLOR_JET[camp][0]) result = Commdef.COLOR_JET[camp][1];
+        return result;
+    }
+
+    public void move(){
         int preIndex = index;
-        index = Commdef.COLOR_PATH[camp][curStep + 1];
+        index = path.get(0);
         TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
-        anim.setDuration(1000);
+        anim.setDuration(500);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -68,12 +115,17 @@ public class Airplane {
                 planeView.clearAnimation();
                 planeView.setX(getXFromIndex(index));
                 planeView.setY(getYFromIndex(index));
-                curStep++;
-                steps--;
-                if(steps != 0) moveSteps();
+                path.remove(0);
+                if(!path.isEmpty()) move();
                 else{
-                    board.setTurn((board.getTurn() + 1) % 4);
-                    board.beginTurn();
+                    curStep = getStepFromIndex(index);
+                    if(board.getDiceNumber() == 6){
+                        board.beginTurn();
+                    }
+                    else{
+                        board.setTurn((board.getTurn() + 1) % 4);
+                        board.beginTurn();
+                    }
                 }
             }
         });
@@ -86,6 +138,17 @@ public class Airplane {
         else return false;
     }
 
+    public int getStepFromIndex(int index){
+        int step = -1;
+        for(int i = 0; i < Commdef.COLOR_PATH[camp].length; i++){
+            if(index == Commdef.COLOR_PATH[camp][i]){
+                step = i;
+                break;
+            }
+        }
+        return step;
+    }
+
     public float getXFromIndex(int index){
         return xOffset + gridLength * Commdef.POSITIONS[index][0];
     }
@@ -95,7 +158,7 @@ public class Airplane {
     }
 
     public void setListner(final int diceNumber){
-        planeView.setOnClickListener(new View.OnClickListener(){
+        planeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 board.forbidClick();
@@ -136,9 +199,6 @@ public class Airplane {
     public int getCurStep(){
         return curStep;
     }
-    public int getSteps(){
-        return steps;
-    }
 
     public void setCamp(int camp) {
         this.camp = camp;
@@ -160,9 +220,6 @@ public class Airplane {
     }
     public void setCurStep(int curStep){
         this.curStep = curStep;
-    }
-    public void setSteps(int steps){
-        this.steps = steps;
     }
 
 }

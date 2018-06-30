@@ -1,14 +1,11 @@
 package com.example.isszym.aeroplanechess;
-
+// 各种固定参数
 public class Commdef {
     // 四个阵营
     public static final int BLUE = 0;
     public static final int GREEN = 1;
     public static final int RED = 2;
     public static final int YELLOW = 3;
-
-    // 飞机总数
-    public static final int PLANE_NUM = 16;
 
     // 各色飞机编号0~15
     public static int[] BLUE_PLANE = {0, 1, 2, 3};
@@ -29,7 +26,7 @@ public class Commdef {
     public static int TOTAL_PLANE_NUM = 16;
 
     // 飞机起飞的骰子点数
-    public static int[] TAKE_OFF_NUMBER = {4, 6};
+    public static int[] TAKE_OFF_NUMBER = {5, 6};
 
     // 骰子大小所占格数
     public static final int DICE_GRID_NUM = 6;
@@ -76,11 +73,11 @@ public class Commdef {
     public static final int[] RED_GRID = {47, 51, 55, 59, 63, 67, 71, 23, 27, 31, 35, 39, 43};
     public static final int[] YELLOW_GRID = {60, 64, 68, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56};
 
-    // 各色的大跳方块的编号
-    public static final int BLUE_JET = 37;
-    public static final int GREEN_JET = 50;
-    public static final int RED_JET = 63;
-    public static final int YELLOW_JET = 24;
+    // 各色的大跳方块及跳到方块的编号
+    public static final int[] BLUE_JET = {37, 49};
+    public static final int[] GREEN_JET = {50, 62};
+    public static final int[] RED_JET = {63, 23};
+    public static final int[] YELLOW_JET = {24, 36};
 
     // 各色的机场位置编号
     public static final int[] BLUE_AIRPORT = {0, 1, 2, 3};
@@ -125,7 +122,12 @@ public class Commdef {
     };
 
     // 各色的大跳方块的编号数组
-    public static final int[] COLOR_JET = {37, 50, 63, 24};
+    public static final int[][] COLOR_JET = {
+            {37, 49},
+            {50, 62},
+            {63, 23},
+            {24, 36}
+    };
 
     // 各色的机场位置编号数组
     public static final int[][] COLOR_AIRPORT = {

@@ -155,9 +155,13 @@ public class Board {
     }
 
     public void forbidClick(){
-        for(int i = 0; i < Commdef.PLANE_NUM; i++){
+        for(int i = 0; i < Commdef.TOTAL_PLANE_NUM; i++){
             planes[i].getPlaneView().setClickable(false);
         }
+    }
+
+    public int getDiceNumber(){
+        return diceNumber;
     }
 
     public ImageView getBoardView() {
