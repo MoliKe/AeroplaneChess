@@ -8,7 +8,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class Airplane {
-    private Board board;
+    private Board board;                // 与棋盘通信用，是board的一个引用
     private int camp;                   // 飞机阵营
     private int number;                 // 飞机编号，0~15
     private int portIndex;              // 停机处

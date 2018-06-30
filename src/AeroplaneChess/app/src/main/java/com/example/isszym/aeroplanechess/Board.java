@@ -106,6 +106,7 @@ public class Board {
         diceView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                diceView.setClickable(false);
                 Random rand = new Random();
                 diceNumber = rand.nextInt(6) + 1;
                 diceView.setText(String.valueOf(diceNumber));
@@ -127,7 +128,6 @@ public class Board {
                     }
                 }
                 if (ableToTakeOff) {
-                    diceView.setClickable(false);
                     Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                     for (int i : Commdef.COLOR_PLANE[turn]) {
                         planes[i].setListner(diceNumber);
@@ -199,7 +199,6 @@ public class Board {
     public void setDiceView(TextView diceView){
         this.diceView = diceView;
     }
-
 
     public void setLength(float screenWidth){
         this.screenWidth = screenWidth;
