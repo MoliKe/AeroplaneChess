@@ -95,15 +95,15 @@ public class Commdef {
 
     // 圆圈路径上的各色方块编号
     public static final int[] BLUE_GRID = {21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69};
-    public static final int[] GREEN_GRID = {34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 82};
+    public static final int[] GREEN_GRID = {34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 22, 26, 30};
     public static final int[] RED_GRID = {47, 51, 55, 59, 63, 67, 71, 23, 27, 31, 35, 39, 43};
     public static final int[] YELLOW_GRID = {60, 64, 68, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56};
 
-    // 各色的大跳方块及跳到方块的编号
-    public static final int[] BLUE_JET = {37, 49};
-    public static final int[] GREEN_JET = {50, 62};
-    public static final int[] RED_JET = {63, 23};
-    public static final int[] YELLOW_JET = {24, 36};
+    // 各色的大跳经过的编号
+    public static final int[] BLUE_JET = {37, 86, 49};
+    public static final int[] GREEN_JET = {50, 92, 62};
+    public static final int[] RED_JET = {63, 74, 23};
+    public static final int[] YELLOW_JET = {24, 80, 36};
 
     // 各色的机场位置编号
     public static final int[] BLUE_AIRPORT = {0, 1, 2, 3};
@@ -142,17 +142,17 @@ public class Commdef {
     // 圆圈路径上的各色方块编号数组
     public static final int[][] COLOR_GRID = {
             {21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69},   // 蓝
-            {34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 82},   // 绿
+            {34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 22, 26, 30},   // 绿
             {47, 51, 55, 59, 63, 67, 71, 23, 27, 31, 35, 39, 43},   // 红
             {60, 64, 68, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56}    // 黄
     };
 
     // 各色的大跳方块的编号数组
     public static final int[][] COLOR_JET = {
-            {37, 49},
-            {50, 62},
-            {63, 23},
-            {24, 36}
+            {37, 86, 49},
+            {50, 92, 62},
+            {63, 74, 23},
+            {24, 80, 36}
     };
 
     // 各色的机场位置编号数组

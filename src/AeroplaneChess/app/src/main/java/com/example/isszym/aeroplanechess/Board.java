@@ -38,8 +38,6 @@ public class Board {
         this.status = Commdef.GAME_NOT_START;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
-        System.out.println("boardLength");
-        System.out.println(boardLength);
         ViewGroup.LayoutParams boardParams = boardView.getLayoutParams();
         boardParams.width = (int)boardLength;
         boardParams.height = (int)boardLength;
@@ -70,8 +68,8 @@ public class Board {
     public void gameStart(Context context){
         status = Commdef.GAME_START;
         // 还原飞机位置
-        for (int i : Commdef.COLOR_PLANE[turn]) {
-            planes[i].restore();
+        for (Airplane plane : planes) {
+            plane.restore();
         }
         // 随机决定哪方先开始
         this.context = context;
@@ -129,8 +127,8 @@ public class Board {
                 if (ableToTakeOff) {
                     showInfo("飞");
                     for (int i : Commdef.COLOR_PLANE[turn]) {
-                        if(planes[i].getStatus() != Commdef.FINISHED)
-                            planes[i].setListner(diceNumber);
+                        if (planes[i].getStatus() != Commdef.FINISHED)
+                            planes[i].getReadyToFly(diceNumber);
                     }
                 } else {
                     if (isAllInAirport) {
@@ -145,13 +143,22 @@ public class Board {
                     } else {
                         showInfo("飞");
                         for (Integer i : outsidePlanes) {
-                            planes[i].setListner(diceNumber);
+                            planes[i].getReadyToFly(diceNumber);
                         }
                         outsidePlanes.clear();
                     }
                 }
             }
         });
+    }
+
+    public void sweepIndex(int index){
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index && plane.getCamp() != turn){
+                plane.crackByPlane();
+            }
+        }
+        return;
     }
 
     public void forbidClick(){
@@ -212,8 +219,6 @@ public class Board {
         this.screenWidth = screenWidth;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
-        System.out.println("boardLength");
-        System.out.println(boardLength);
         ViewGroup.LayoutParams boardParams = boardView.getLayoutParams();
         boardParams.width = (int)boardLength;
         boardParams.height = (int)boardLength;

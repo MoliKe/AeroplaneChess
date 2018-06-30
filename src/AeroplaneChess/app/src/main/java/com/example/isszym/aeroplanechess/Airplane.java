@@ -21,8 +21,9 @@ public class Airplane {
     private float xOffset;              // 棋盘在屏幕X方向即右方向的偏移
     private float yOffset;              // 棋盘在屏幕Y方向即下方向的偏移
     private ImageView planeView;        // 飞机的view
-    private int curStep;                // 己方路径上当前下标
+    private int curStep;                // 己方路径上当前下标0~57
     private ArrayList<Integer> path;    // 飞行棋要走的路径
+    private int crackNum;               // 飞行棋要走的路径最后多少步可能会碰撞
 
     Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
         this.board = board;
@@ -37,13 +38,14 @@ public class Airplane {
         this.planeView = planeView;
         this.curStep = -1;
         path = new ArrayList<Integer>();
+        crackNum = 0;
         ViewGroup.LayoutParams params = planeView.getLayoutParams();
         params.width = (int)(2*gridLength);
         params.height = (int)(2*gridLength);
         planeView.setLayoutParams(params);
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         planeView.setX(getXFromIndex(index));
         planeView.setY(getYFromIndex(index));
-        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         planeView.setVisibility(View.VISIBLE);
     }
 
@@ -57,11 +59,9 @@ public class Airplane {
     }
 
     public void setPath(int steps){
-        path.clear();
         for(int i = 1; i <= steps; i++){
             if(curStep + i >= Commdef.PATH_LENGTH){
-                path.add(Commdef.COLOR_PATH[camp][2*Commdef.PATH_LENGTH - curStep - i - 2]);
-                System.out.println(2 * Commdef.PATH_LENGTH - curStep - i - 2);
+                path.add(Commdef.COLOR_PATH[camp][2 * Commdef.PATH_LENGTH - curStep - i - 2]);
             }
             else{
                 path.add(Commdef.COLOR_PATH[camp][curStep + i]);
@@ -71,20 +71,28 @@ public class Airplane {
                         path.add(portIndex);
                         status = Commdef.FINISHED;
                     }
+                    // 最后一步不是终点
                     else {
-                        // 最后一步是同色格子或大跳
+                        crackNum += 1;
                         int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
+                        // 最后一步是不是大跳
                         if (isJetGrid(mIndex) == -1) {
+                            // 如果不是大跳，最后一步是不是同色
                             int jumpIndex = isSameColorGrid(mIndex);
                             if (jumpIndex != -1) {
                                 path.add(jumpIndex);
+                                crackNum += 1;
+                                // 最后一步是同色，那下一个同色格是不是大跳
                                 if (isJetGrid(jumpIndex) != -1) {
                                     path.add(isJetGrid(jumpIndex));
+                                    crackNum += 1;
                                 }
                             }
                         } else {
+                            // 最后一步是大跳
                             path.add(isJetGrid(mIndex));
                             path.add(isSameColorGrid(isJetGrid(mIndex)));
+                            crackNum += 2;
                         }
                     }
                 }
@@ -107,7 +115,7 @@ public class Airplane {
     // 判断参数index是不是大跳的格子，若是则返回跳到格子的index，否则返回-1
     public int isJetGrid(int index){
         int result = -1;
-        if(index == Commdef.COLOR_JET[camp][0]) result = Commdef.COLOR_JET[camp][1];
+        if(index == Commdef.COLOR_JET[camp][0]) result = Commdef.COLOR_JET[camp][2];
         return result;
     }
 
@@ -132,9 +140,21 @@ public class Airplane {
                 planeView.setX(getXFromIndex(index));
                 planeView.setY(getYFromIndex(index));
                 path.remove(0);
+                // path.size()表示还要走的步数
+                if(path.size() < crackNum){
+                    if(index == Commdef.COLOR_JET[camp][2]){
+                        board.sweepIndex(Commdef.COLOR_JET[camp][1]);
+                        board.sweepIndex(Commdef.COLOR_JET[camp][2]);
+                    }
+                    else{
+                        board.sweepIndex(index);
+                    }
+                }
                 if(!path.isEmpty()) move();
                 else{
                     curStep = getStepFromIndex(index);
+                    path.clear();
+                    crackNum = 0;
                     if(board.getDiceNumber() == 6){
                         board.beginTurn();
                     }
@@ -174,7 +194,7 @@ public class Airplane {
         return yOffset + gridLength * Commdef.POSITIONS[index][1];
     }
 
-    public void setListner(final int diceNumber){
+    public void getReadyToFly(final int diceNumber){
         if(status == Commdef.FINISHED) return;
         planeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,14 +206,42 @@ public class Airplane {
         });
     }
 
-    public void restore(){
+    public void crackByPlane(){
+        int preIndex = index;
+        this.status = Commdef.WAITING;
         index = portIndex;
+        this.curStep = -1;
+        path = new ArrayList<Integer>();
+        crackNum = 0;
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
+        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
+        anim.setDuration(500);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                planeView.clearAnimation();
+                planeView.setX(getXFromIndex(index));
+                planeView.setY(getYFromIndex(index));
+            }
+        });
+        planeView.startAnimation(anim);
+    }
+
+    public void restore(){
         status = Commdef.WAITING;
+        index = portIndex;
         curStep = -1;
-        ViewGroup.LayoutParams params = planeView.getLayoutParams();
-        params.width = (int)(2*gridLength);
-        params.height = (int)(2*gridLength);
-        planeView.setLayoutParams(params);
+        path.clear();
+        crackNum = 0;
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         planeView.setX(getXFromIndex(index));
         planeView.setY(getYFromIndex(index));
     }
