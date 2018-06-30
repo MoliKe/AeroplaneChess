@@ -49,22 +49,22 @@ public class Board {
 
     public void initPlanes(ImageView[] planeViews){
         planes = new Airplane[]{
-                new Airplane(Commdef.BLUE, 0, 0, gridLength, xOffset, yOffset, planeViews[0]),
-                new Airplane(Commdef.BLUE, 1, 1, gridLength, xOffset, yOffset, planeViews[1]),
-                new Airplane(Commdef.BLUE, 2, 2, gridLength, xOffset, yOffset, planeViews[2]),
-                new Airplane(Commdef.BLUE, 3, 3, gridLength, xOffset, yOffset, planeViews[3]),
-                new Airplane(Commdef.GREEN, 4, 5, gridLength, xOffset, yOffset, planeViews[4]),
-                new Airplane(Commdef.GREEN, 5, 6, gridLength, xOffset, yOffset, planeViews[5]),
-                new Airplane(Commdef.GREEN, 6, 7, gridLength, xOffset, yOffset, planeViews[6]),
-                new Airplane(Commdef.GREEN, 7, 8, gridLength, xOffset, yOffset, planeViews[7]),
-                new Airplane(Commdef.RED, 8, 10, gridLength, xOffset, yOffset, planeViews[8]),
-                new Airplane(Commdef.RED, 9, 11, gridLength, xOffset, yOffset, planeViews[9]),
-                new Airplane(Commdef.RED, 10, 12, gridLength, xOffset, yOffset, planeViews[10]),
-                new Airplane(Commdef.RED, 11, 13, gridLength, xOffset, yOffset, planeViews[11]),
-                new Airplane(Commdef.YELLOW, 12, 15, gridLength, xOffset, yOffset, planeViews[12]),
-                new Airplane(Commdef.YELLOW, 13, 16, gridLength, xOffset, yOffset, planeViews[13]),
-                new Airplane(Commdef.YELLOW, 14, 17, gridLength, xOffset, yOffset, planeViews[14]),
-                new Airplane(Commdef.YELLOW, 15, 18, gridLength, xOffset, yOffset, planeViews[15]),
+                new Airplane(this, Commdef.BLUE, 0, 0, gridLength, xOffset, yOffset, planeViews[0]),
+                new Airplane(this, Commdef.BLUE, 1, 1, gridLength, xOffset, yOffset, planeViews[1]),
+                new Airplane(this, Commdef.BLUE, 2, 2, gridLength, xOffset, yOffset, planeViews[2]),
+                new Airplane(this, Commdef.BLUE, 3, 3, gridLength, xOffset, yOffset, planeViews[3]),
+                new Airplane(this, Commdef.GREEN, 4, 5, gridLength, xOffset, yOffset, planeViews[4]),
+                new Airplane(this, Commdef.GREEN, 5, 6, gridLength, xOffset, yOffset, planeViews[5]),
+                new Airplane(this, Commdef.GREEN, 6, 7, gridLength, xOffset, yOffset, planeViews[6]),
+                new Airplane(this, Commdef.GREEN, 7, 8, gridLength, xOffset, yOffset, planeViews[7]),
+                new Airplane(this, Commdef.RED, 8, 10, gridLength, xOffset, yOffset, planeViews[8]),
+                new Airplane(this, Commdef.RED, 9, 11, gridLength, xOffset, yOffset, planeViews[9]),
+                new Airplane(this, Commdef.RED, 10, 12, gridLength, xOffset, yOffset, planeViews[10]),
+                new Airplane(this, Commdef.RED, 11, 13, gridLength, xOffset, yOffset, planeViews[11]),
+                new Airplane(this, Commdef.YELLOW, 12, 15, gridLength, xOffset, yOffset, planeViews[12]),
+                new Airplane(this, Commdef.YELLOW, 13, 16, gridLength, xOffset, yOffset, planeViews[13]),
+                new Airplane(this, Commdef.YELLOW, 14, 17, gridLength, xOffset, yOffset, planeViews[14]),
+                new Airplane(this, Commdef.YELLOW, 15, 18, gridLength, xOffset, yOffset, planeViews[15]),
         };
     }
 
@@ -83,11 +83,11 @@ public class Board {
         params.width = (int)(Commdef.DICE_GRID_NUM*gridLength);
         params.height = (int)(Commdef.DICE_GRID_NUM*gridLength);
         diceView.setLayoutParams(params);
-        diceView.setText("骰子?");
         beginTurn();
     }
 
     public void beginTurn(){
+        diceView.setText("骰子?");
         // 调整骰子的位置
         if (turn == Commdef.BLUE) {
             diceView.setX(0);
@@ -127,7 +127,7 @@ public class Board {
                     }
                 }
                 if (ableToTakeOff) {
-//                    diceView.setClickable(false);
+                    diceView.setClickable(false);
                     Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                     for (int i : Commdef.COLOR_PLANE[turn]) {
                         planes[i].setListner(diceNumber);
@@ -135,6 +135,13 @@ public class Board {
                 } else {
                     if (isAllInAirport) {
                         Toast.makeText(context, "无法起飞", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                turn = (turn + 1) % 4;
+                                beginTurn();
+                            }
+
+                        }, 1000);   // 等待一秒后执行
                     } else {
                         Toast.makeText(context, "飞", Toast.LENGTH_SHORT).show();
                         for (Integer i : outsidePlanes) {
@@ -143,10 +150,14 @@ public class Board {
                         outsidePlanes.clear();
                     }
                 }
-                turn = (turn + 1) % 4;
-                beginTurn();
             }
         });
+    }
+
+    public void forbidClick(){
+        for(int i = 0; i < Commdef.PLANE_NUM; i++){
+            planes[i].getPlaneView().setClickable(false);
+        }
     }
 
     public ImageView getBoardView() {
@@ -165,12 +176,20 @@ public class Board {
         return gridLength;
     }
 
+    public int getTurn(){
+        return turn;
+    }
+
     public void setXOffset(float xOffset) {
         this.xOffset = xOffset;
     }
 
     public void setYOffset(float yOffset) {
         this.yOffset = yOffset;
+    }
+
+    public void setTurn(int turn){
+        this.turn = turn;
     }
 
     public void setBoardView(ImageView boardView){

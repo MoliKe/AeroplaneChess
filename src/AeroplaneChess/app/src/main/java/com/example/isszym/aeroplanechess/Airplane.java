@@ -8,6 +8,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class Airplane {
+    private Board board;
     private int camp;                   // 飞机阵营
     private int number;                 // 飞机编号，0~15
     private int portIndex;              // 停机处
@@ -20,7 +21,8 @@ public class Airplane {
     private int curStep;                // 己方路径上当前下标
     private int steps;                  // 需要走的步数
 
-    Airplane(int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
+    Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
+        this.board = board;
         this.camp = camp;
         this.number = number;
         this.portIndex = index;
@@ -69,6 +71,10 @@ public class Airplane {
                 curStep++;
                 steps--;
                 if(steps != 0) moveSteps();
+                else{
+                    board.setTurn((board.getTurn() + 1) % 4);
+                    board.beginTurn();
+                }
             }
         });
         planeView.startAnimation(anim);
@@ -92,6 +98,7 @@ public class Airplane {
         planeView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                board.forbidClick();
                 receiveDiceNumber(diceNumber);
                 planeView.setClickable(false);
             }

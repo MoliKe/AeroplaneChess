@@ -7,6 +7,9 @@ public class Commdef {
     public static final int RED = 2;
     public static final int YELLOW = 3;
 
+    // 飞机总数
+    public static final int PLANE_NUM = 16;
+
     // 各色飞机编号0~15
     public static int[] BLUE_PLANE = {0, 1, 2, 3};
     public static int[] GREEN_PLANE = {4, 5, 6, 7};
