@@ -4,6 +4,7 @@ import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
@@ -23,7 +24,7 @@ public class Airplane {
     private ImageView planeView;        // 飞机的view
     private int curStep;                // 己方路径上当前下标0~57
     private ArrayList<Integer> path;    // 飞行棋要走的路径
-    private ArrayList<Integer> crack;   // 飞行中的碰撞
+    private ArrayList<Integer> crack;   // 飞行中的碰撞类型
 
     Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
         this.board = board;
@@ -129,7 +130,7 @@ public class Airplane {
                 // 最后一步是不是大跳
                 int index1 = isJetGrid(mIndex);
                 if (index1 == -1) {
-                    // 如果不是大跳，最后一步是不是同色
+                    // 如果不是大跳，是不是同色
                     int index2 = isSameColorGrid(mIndex);
                     if (index2 != -1) {
                         path.add(index2);
@@ -332,6 +333,12 @@ public class Airplane {
 
     public void getReadyToFly(){
         if(status == Commdef.FINISHED) return;
+        ScaleAnimation animation =new ScaleAnimation(1.0f, 1.2f, 1.0f, 1.2f, Animation.ABSOLUTE, planeView.getX()+gridLength, Animation.ABSOLUTE, planeView.getY()+gridLength);
+        animation.setDuration(500);//设置动画持续时间
+        animation.setRepeatCount(-1);//设置重复次数
+        animation.setRepeatMode(Animation.REVERSE);
+        animation.setFillAfter(false);
+        planeView.startAnimation(animation);
         planeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

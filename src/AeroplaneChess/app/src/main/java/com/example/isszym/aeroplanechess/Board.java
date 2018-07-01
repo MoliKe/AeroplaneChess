@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -213,6 +214,7 @@ public class Board {
     public void forbidClick(){
         for(Airplane plane : planes){
             plane.getPlaneView().setClickable(false);
+            plane.getPlaneView().clearAnimation();
         }
     }
 
