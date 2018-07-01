@@ -107,7 +107,7 @@ public class Commdef {
             0
     };
 
-    public static final float OVERLAP_DISTANCE = 0.25f;
+    public static final float OVERLAP_DISTANCE = 0.5f;
 
     public static final int UP = 0;
     public static final int DOWN = 1;

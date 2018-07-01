@@ -52,6 +52,7 @@ public class Airplane {
     }
 
     public void receiveDiceNumber(int diceNumber){
+        planeView.bringToFront();
         int steps;
         if(isInAirport()) steps = 1;
         else steps = diceNumber;
@@ -255,18 +256,18 @@ public class Airplane {
                 switch (Commdef.OVERLAP_DIRECTION[index]){
                     case Commdef.UP:
                         targetX = getXFromIndex(index);
-                        targetY = getYFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetY = getYFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * (planeNum - 1);
                         break;
                     case Commdef.DOWN:
                         targetX = getXFromIndex(index);
-                        targetY = getYFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetY = getYFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * (planeNum - 1);
                         break;
                     case Commdef.LEFT:
-                        targetX = getXFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetX = getXFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * (planeNum - 1);
                         targetY = getYFromIndex(index);
                         break;
                     case Commdef.RIGHT:
-                        targetX = getXFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetX = getXFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * (planeNum - 1);
                         targetY = getYFromIndex(index);
                         break;
                 }
