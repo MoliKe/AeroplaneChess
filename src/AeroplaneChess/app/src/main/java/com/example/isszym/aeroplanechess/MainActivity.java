@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         screenWidth = getScreenW(getApplicationContext());
 
-        chessboard = new Board(boardView, diceView, screenWidth, getApplicationContext());
+        chessboard = new Board(boardView, diceView, screenWidth, getApplicationContext(), playerViews);
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
         planeViews[1] = (ImageView)findViewById(R.id.bluePlane2);
@@ -69,14 +69,8 @@ public class MainActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 float xOffSet = chessboard.getBoardView().getLeft();
                 float yOffSet = chessboard.getBoardView().getTop();
-                for(int i = 0; i < 4; i++){
-                    ViewGroup.LayoutParams params = playerViews[i].getLayoutParams();
-                    params.width = (int)(screenWidth / 3);
-                    params.height = (int)(yOffSet);
-                    playerViews[i].setLayoutParams(params);
-                }
-                chessboard.setXOffset(xOffSet);
-                chessboard.setYOffset(yOffSet);
+                chessboard.setXOffSet(xOffSet);
+                chessboard.setYOffSet(yOffSet);
 
                 chessboard.initPlanes(planeViews);
 

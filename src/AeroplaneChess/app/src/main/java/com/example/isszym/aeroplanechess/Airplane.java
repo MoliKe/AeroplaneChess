@@ -20,15 +20,15 @@ public class Airplane {
     private int index;                  // 飞机所在位置0~97
     private int status;                 // 飞机状态（在机场，飞行中, 完成飞行）
     private float gridLength;           // 棋盘上一小格的长度
-    private float xOffset;              // 棋盘在屏幕X方向即右方向的偏移
-    private float yOffset;              // 棋盘在屏幕Y方向即下方向的偏移
+    private float xOffSet;              // 棋盘在屏幕X方向即右方向的偏移
+    private float yOffSet;              // 棋盘在屏幕Y方向即下方向的偏移
     private ImageView planeView;        // 飞机的view
     private int curStep;                // 己方路径上当前下标0~57
     private ArrayList<Integer> path;    // 飞行棋要走的路径
     private ArrayList<Integer> crack;   // 飞行中的碰撞类型
     private float targetX, targetY;
 
-    Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
+    Airplane(Board board, int camp, int number, int index, float gridLength, float xOffSet, float yOffSet, ImageView planeView){
         this.board = board;
         this.camp = camp;
         this.number = number;
@@ -36,8 +36,8 @@ public class Airplane {
         this.index = index;
         this.status = Commdef.WAITING;
         this.gridLength = gridLength;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+        this.xOffSet = xOffSet;
+        this.yOffSet = yOffSet;
         this.planeView = planeView;
         this.curStep = -1;
         path = new ArrayList<Integer>();
@@ -364,11 +364,11 @@ public class Airplane {
     }
 
     public float getXFromIndex(int index){
-        return xOffset + gridLength * Commdef.POSITIONS[index][0];
+        return xOffSet + gridLength * Commdef.POSITIONS[index][0];
     }
 
     public float getYFromIndex(int index){
-        return yOffset + gridLength * Commdef.POSITIONS[index][1];
+        return yOffSet + gridLength * Commdef.POSITIONS[index][1];
     }
 
     public void getReadyToFly(){

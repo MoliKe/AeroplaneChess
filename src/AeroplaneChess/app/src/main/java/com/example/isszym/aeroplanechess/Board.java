@@ -22,8 +22,8 @@ public class Board {
     private float screenWidth;
     private float boardLength;
     private float gridLength;
-    private float xOffset;      // 棋盘在屏幕X方向即右方向的偏移
-    private float yOffset;      // 棋盘在屏幕Y方向即下方向的偏移
+    private float xOffSet;      // 棋盘在屏幕X方向即右方向的偏移
+    private float yOffSet;      // 棋盘在屏幕Y方向即下方向的偏移
     private Context context;
     private ImageView boardView;
     private TextView diceView;
@@ -31,9 +31,10 @@ public class Board {
     private Airplane[] planes;
     private int markPlane;      // 被标记的飞机，下次自动走，在迭在别人迭子上时用
     private int winner;
+    private TextView[] playerViews;
 
 
-    Board(ImageView boardView, TextView diceView, float screenWidth, Context context){
+    Board(ImageView boardView, TextView diceView, float screenWidth, Context context, TextView[] playerViews){
         this.status = Commdef.GAME_NOT_START;
         this.screenWidth = screenWidth;
         this.boardView = boardView;
@@ -45,31 +46,31 @@ public class Board {
         boardParams.width = (int)boardLength;
         boardParams.height = (int)boardLength;
         boardView.setLayoutParams(boardParams);
-        // 调整骰子大小
-        ViewGroup.LayoutParams params = diceView.getLayoutParams();
-        params.width = (int)(Commdef.DICE_GRID_NUM*gridLength);
-        params.height = (int)(Commdef.DICE_GRID_NUM*gridLength);
-        diceView.setLayoutParams(params);
+        this.playerViews = new TextView[4];
+        this.playerViews[0] = playerViews[0];
+        this.playerViews[1] = playerViews[1];
+        this.playerViews[2] = playerViews[2];
+        this.playerViews[3] = playerViews[3];
     }
 
     public void initPlanes(ImageView[] planeViews){
         planes = new Airplane[]{
-                new Airplane(this, Commdef.BLUE, 0, 0, gridLength, xOffset, yOffset, planeViews[0]),
-                new Airplane(this, Commdef.BLUE, 1, 1, gridLength, xOffset, yOffset, planeViews[1]),
-                new Airplane(this, Commdef.BLUE, 2, 2, gridLength, xOffset, yOffset, planeViews[2]),
-                new Airplane(this, Commdef.BLUE, 3, 3, gridLength, xOffset, yOffset, planeViews[3]),
-                new Airplane(this, Commdef.GREEN, 4, 5, gridLength, xOffset, yOffset, planeViews[4]),
-                new Airplane(this, Commdef.GREEN, 5, 6, gridLength, xOffset, yOffset, planeViews[5]),
-                new Airplane(this, Commdef.GREEN, 6, 7, gridLength, xOffset, yOffset, planeViews[6]),
-                new Airplane(this, Commdef.GREEN, 7, 8, gridLength, xOffset, yOffset, planeViews[7]),
-                new Airplane(this, Commdef.RED, 8, 10, gridLength, xOffset, yOffset, planeViews[8]),
-                new Airplane(this, Commdef.RED, 9, 11, gridLength, xOffset, yOffset, planeViews[9]),
-                new Airplane(this, Commdef.RED, 10, 12, gridLength, xOffset, yOffset, planeViews[10]),
-                new Airplane(this, Commdef.RED, 11, 13, gridLength, xOffset, yOffset, planeViews[11]),
-                new Airplane(this, Commdef.YELLOW, 12, 15, gridLength, xOffset, yOffset, planeViews[12]),
-                new Airplane(this, Commdef.YELLOW, 13, 16, gridLength, xOffset, yOffset, planeViews[13]),
-                new Airplane(this, Commdef.YELLOW, 14, 17, gridLength, xOffset, yOffset, planeViews[14]),
-                new Airplane(this, Commdef.YELLOW, 15, 18, gridLength, xOffset, yOffset, planeViews[15]),
+                new Airplane(this, Commdef.BLUE, 0, 0, gridLength, xOffSet, yOffSet, planeViews[0]),
+                new Airplane(this, Commdef.BLUE, 1, 1, gridLength, xOffSet, yOffSet, planeViews[1]),
+                new Airplane(this, Commdef.BLUE, 2, 2, gridLength, xOffSet, yOffSet, planeViews[2]),
+                new Airplane(this, Commdef.BLUE, 3, 3, gridLength, xOffSet, yOffSet, planeViews[3]),
+                new Airplane(this, Commdef.GREEN, 4, 5, gridLength, xOffSet, yOffSet, planeViews[4]),
+                new Airplane(this, Commdef.GREEN, 5, 6, gridLength, xOffSet, yOffSet, planeViews[5]),
+                new Airplane(this, Commdef.GREEN, 6, 7, gridLength, xOffSet, yOffSet, planeViews[6]),
+                new Airplane(this, Commdef.GREEN, 7, 8, gridLength, xOffSet, yOffSet, planeViews[7]),
+                new Airplane(this, Commdef.RED, 8, 10, gridLength, xOffSet, yOffSet, planeViews[8]),
+                new Airplane(this, Commdef.RED, 9, 11, gridLength, xOffSet, yOffSet, planeViews[9]),
+                new Airplane(this, Commdef.RED, 10, 12, gridLength, xOffSet, yOffSet, planeViews[10]),
+                new Airplane(this, Commdef.RED, 11, 13, gridLength, xOffSet, yOffSet, planeViews[11]),
+                new Airplane(this, Commdef.YELLOW, 12, 15, gridLength, xOffSet, yOffSet, planeViews[12]),
+                new Airplane(this, Commdef.YELLOW, 13, 16, gridLength, xOffSet, yOffSet, planeViews[13]),
+                new Airplane(this, Commdef.YELLOW, 14, 17, gridLength, xOffSet, yOffSet, planeViews[14]),
+                new Airplane(this, Commdef.YELLOW, 15, 18, gridLength, xOffSet, yOffSet, planeViews[15]),
         };
     }
 
@@ -139,18 +140,12 @@ public class Board {
     public void beginTurn(){
         diceView.setText("骰子?");
         // 调整骰子的位置
-        if (turn == Commdef.BLUE) {
-            diceView.setX(0);
-            diceView.setY(yOffset + boardLength);
-        } else if (turn == Commdef.GREEN) {
-            diceView.setX(0);
-            diceView.setY(yOffset - Commdef.DICE_GRID_NUM*gridLength);
-        } else if (turn == Commdef.RED) {
-            diceView.setX(screenWidth - Commdef.DICE_GRID_NUM*gridLength);
-            diceView.setY(yOffset - Commdef.DICE_GRID_NUM*gridLength);
-        } else if (turn == Commdef.YELLOW) {
-            diceView.setX(screenWidth - Commdef.DICE_GRID_NUM*gridLength);
-            diceView.setY(yOffset + boardLength);
+        if (turn == Commdef.BLUE || turn == Commdef.GREEN) {
+            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.59));
+            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.25));
+        } else {
+            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.02));
+            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.25));
         }
         diceView.setVisibility(View.VISIBLE);
         diceView.setOnClickListener(new View.OnClickListener() {
@@ -290,11 +285,11 @@ public class Board {
     }
 
     public float getXFromIndex(int index){
-        return xOffset + gridLength * Commdef.POSITIONS[index][0];
+        return xOffSet + gridLength * Commdef.POSITIONS[index][0];
     }
 
     public float getYFromIndex(int index){
-        return yOffset + gridLength * Commdef.POSITIONS[index][1];
+        return yOffSet + gridLength * Commdef.POSITIONS[index][1];
     }
 
     public float getGridLength() {
@@ -305,12 +300,24 @@ public class Board {
         return turn;
     }
 
-    public void setXOffset(float xOffset) {
-        this.xOffset = xOffset;
+    public void setXOffSet(float xOffSet) {
+        this.xOffSet = xOffSet;
     }
 
-    public void setYOffset(float yOffset) {
-        this.yOffset = yOffset;
+    public void setYOffSet(float yOffSet) {
+        this.yOffSet = yOffSet;
+        // 调整骰子大小
+        ViewGroup.LayoutParams diceParams = diceView.getLayoutParams();
+        diceParams.width = (int)(yOffSet * 0.55);
+        diceParams.height = (int)(yOffSet * 0.55);
+        diceView.setLayoutParams(diceParams);
+        // 调整玩家信息框的大小
+        for(int i = 0; i < 4; i++){
+            ViewGroup.LayoutParams playerParams = playerViews[i].getLayoutParams();
+            playerParams.width = (int)(yOffSet * 1.4);
+            playerParams.height = (int)(yOffSet);
+            playerViews[i].setLayoutParams(playerParams);
+        }
     }
 
     public void setTurn(int turn){
