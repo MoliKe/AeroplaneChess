@@ -177,7 +177,7 @@ public class Board {
                 beginTurn();
             }
             else{
-//                turn = (turn + 1) % Commdef.PLAYER_NUM;
+                turn = (turn + 1) % Commdef.PLAYER_NUM;
                 beginTurn();
             }
         }
