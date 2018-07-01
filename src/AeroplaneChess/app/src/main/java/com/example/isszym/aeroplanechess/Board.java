@@ -236,6 +236,16 @@ public class Board {
         return false;
     }
 
+    public int planeNumOnIndex(int index){
+        int planeNum = 0;
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index) {
+                planeNum++;
+            }
+        }
+        return  planeNum;
+    }
+
     public void showInfo(String sentence){
         Toast.makeText(context, sentence, Toast.LENGTH_SHORT).show();
     }

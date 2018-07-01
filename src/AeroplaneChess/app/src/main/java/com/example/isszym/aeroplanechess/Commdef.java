@@ -107,6 +107,33 @@ public class Commdef {
             0
     };
 
+    public static final float OVERLAP_DISTANCE = 0.25f;
+
+    public static final int UP = 0;
+    public static final int DOWN = 1;
+    public static final int LEFT = 2;
+    public static final int RIGHT = 3;
+
+    public static final int[] OVERLAP_DIRECTION = {
+            UP, UP, UP, UP, LEFT,
+            UP, UP, UP, UP, UP,
+            UP, UP, UP, UP, RIGHT,
+            UP, UP, UP, UP, DOWN,
+            LEFT, RIGHT, RIGHT, RIGHT, UP, UP, UP, LEFT,
+            RIGHT, RIGHT, RIGHT, RIGHT, RIGHT,
+            UP, DOWN, DOWN, DOWN, RIGHT, RIGHT, RIGHT, UP,
+            DOWN, DOWN, DOWN, DOWN, DOWN,
+            RIGHT, LEFT, LEFT, LEFT, DOWN, DOWN, DOWN, RIGHT,
+            LEFT, LEFT, LEFT, LEFT, LEFT,
+            DOWN, UP, UP, UP, LEFT, LEFT, LEFT, DOWN,
+            UP, UP, UP, UP, UP,
+            RIGHT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT,
+            DOWN, DOWN, DOWN, DOWN, DOWN, DOWN,
+            LEFT, LEFT, LEFT, LEFT, LEFT, LEFT,
+            UP, UP, UP, UP, UP, UP,
+            UP
+    };
+
     // 圆圈路径上的各色方块编号
     public static final int[] BLUE_GRID = {21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69};
     public static final int[] GREEN_GRID = {34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 22, 26, 30};

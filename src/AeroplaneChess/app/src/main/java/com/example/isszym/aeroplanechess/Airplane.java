@@ -25,6 +25,7 @@ public class Airplane {
     private int curStep;                // 己方路径上当前下标0~57
     private ArrayList<Integer> path;    // 飞行棋要走的路径
     private ArrayList<Integer> crack;   // 飞行中的碰撞类型
+    private float targetX, targetY;
 
     Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
         this.board = board;
@@ -246,10 +247,40 @@ public class Airplane {
     }
 
     public void move(){
-        int preIndex = index;
         index = path.get(0);
         planeView.setRotation(Commdef.POSITION_ANGLE[index]);
-        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
+        if(path.size() == 1){
+            int planeNum = board.planeNumOnIndex(index);
+            if(planeNum > 1){
+                switch (Commdef.OVERLAP_DIRECTION[index]){
+                    case Commdef.UP:
+                        targetX = getXFromIndex(index);
+                        targetY = getYFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        break;
+                    case Commdef.DOWN:
+                        targetX = getXFromIndex(index);
+                        targetY = getYFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        break;
+                    case Commdef.LEFT:
+                        targetX = getXFromIndex(index) - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetY = getYFromIndex(index);
+                        break;
+                    case Commdef.RIGHT:
+                        targetX = getXFromIndex(index) + Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        targetY = getYFromIndex(index);
+                        break;
+                }
+            }
+            else{
+                targetX = getXFromIndex(index);
+                targetY = getYFromIndex(index);
+            }
+        }
+        else{
+            targetX = getXFromIndex(index);
+            targetY = getYFromIndex(index);
+        }
+        TranslateAnimation anim = new TranslateAnimation(0, targetX - planeView.getX(), 0, targetY - planeView.getY());
         anim.setDuration(500);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -263,10 +294,16 @@ public class Airplane {
             @Override
             public void onAnimationEnd(Animation animation) {
                 planeView.clearAnimation();
-                planeView.setX(getXFromIndex(index));
-                planeView.setY(getYFromIndex(index));
                 path.remove(0);
-                // path.size()表示还要走的步数
+                if(path.isEmpty()){
+                    planeView.setX(targetX);
+                    planeView.setY(targetY);
+                }
+                else{
+                    planeView.setX(getXFromIndex(index));
+                    planeView.setY(getYFromIndex(index));
+                }
+                // 现在path.size()表示还要走的步数
                 if(path.size() < crack.size()){
                     int crackType = crack.get(0);
                     crack.remove(0);
@@ -349,14 +386,13 @@ public class Airplane {
     }
 
     public void crackByPlane(){
-        int preIndex = index;
         this.status = Commdef.WAITING;
         index = portIndex;
         this.curStep = -1;
         path.clear();
         crack.clear();
         planeView.setRotation(Commdef.POSITION_ANGLE[index]);
-        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
+        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - planeView.getX(), 0, getYFromIndex(index) - planeView.getY());
         anim.setDuration(500);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -389,14 +425,13 @@ public class Airplane {
     }
 
     public void finishTask(){
-        int preIndex = index;
         this.status = Commdef.FINISHED;
         index = portIndex;
         this.curStep = -1;
         path.clear();
         crack.clear();
-        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
-        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
+        planeView.setRotation(Commdef.POSITION_ANGLE[index] + 180); // 暂时用翻转机头方向表示完成
+        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - planeView.getX(), 0, getYFromIndex(index) - planeView.getY());
         anim.setDuration(500);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
