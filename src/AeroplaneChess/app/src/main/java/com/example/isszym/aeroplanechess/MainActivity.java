@@ -79,14 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
                 chessboard.initPlanes(planeViews);
 
-//                final Handler mHandler = new Handler();
-//                mHandler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        redPlaneView.setX(xOffset + chessboard.getGridLength() * 3);
-//                        redPlaneView.setY(yOffset + chessboard.getGridLength() * 29);
-//                    }
-//                }, 3000); // 在Handler中执行子线程并延迟3s。
                 chessboard.getBoardView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });

@@ -15,6 +15,14 @@ public class Commdef {
             "黄方阵营",
     };
 
+    // 碰撞类型
+    public static final int NO_CRACK = 0;
+    public static final int SWEEP_OTHERS = 1;
+    public static final int DOWN_TOGETHER = 2;
+    public static final int JET_CRACK = 3;
+    public static final int JET_CRACK_AND_SWEEP_OTHERS = 4;
+    public static final int JET_CRACK_AND_DOWN_TOGETHER = 5;
+
     // 各色飞机编号0~15
     public static final int[] BLUE_PLANE = {0, 1, 2, 3};
     public static final int[] GREEN_PLANE = {4, 5, 6, 7};
@@ -161,6 +169,7 @@ public class Commdef {
             {24, 80, 36}
     };
 
+
     // 各色的机场位置编号数组
     public static final int[][] COLOR_AIRPORT = {
             {0, 1, 2, 3},       // 蓝
@@ -192,6 +201,9 @@ public class Commdef {
             38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
             54, 55, 56, 90, 91, 92, 93, 94, 95}
     };
+
+    // 各色的终点
+    public static final int[] COLOR_DESTINATION = {77, 83, 89, 95};
 
     // 各种颜色路径的长度
     public static final int PATH_LENGTH = 57;

@@ -23,7 +23,7 @@ public class Airplane {
     private ImageView planeView;        // 飞机的view
     private int curStep;                // 己方路径上当前下标0~57
     private ArrayList<Integer> path;    // 飞行棋要走的路径
-    private int crackNum;               // 飞行棋要走的路径最后多少步可能会碰撞
+    private ArrayList<Integer> crack;   // 飞行中的碰撞
 
     Airplane(Board board, int camp, int number, int index, float gridLength, float xOffset, float yOffset, ImageView planeView){
         this.board = board;
@@ -38,7 +38,7 @@ public class Airplane {
         this.planeView = planeView;
         this.curStep = -1;
         path = new ArrayList<Integer>();
-        crackNum = 0;
+        crack = new ArrayList<Integer>();
         ViewGroup.LayoutParams params = planeView.getLayoutParams();
         params.width = (int)(2*gridLength);
         params.height = (int)(2*gridLength);
@@ -58,42 +58,166 @@ public class Airplane {
         move();
     }
 
+    /* 规则
+    1) 开局
+    系统随机判定一个玩家第一个掷骰子，然后以他为基准按顺时针方向轮流掷骰。
+    2) 起飞
+    传统的规则只有在掷得6点方可起飞，为了提高游戏的激烈程度，增加掷得5点就可以将飞机送入起飞平台。掷得6点可以再掷骰子一次，确定棋子的前进步数；
+    3) 连投奖励
+    在游戏进行过程中，掷得6点的游戏者可以连续投掷骰子，直至显示点数不是6点或游戏结束。
+    4) 迭子
+    己方的棋子走至同一格内，可迭在一起，这类情况称为“迭子”。敌方的棋子不能在迭子上面飞过；
+    当敌方的棋子正好停留在“迭子”上方时，敌方棋子与2架迭子棋子同时返回停机坪。若其它游戏者所掷点数大于他的棋子与迭子的相差步数，则多余格数为由迭子处返回的格数；
+    当其它游戏者所掷点数是6而且大于他得棋子与迭子的相差步数时，那么其它游戏者的棋子可以停于迭子上面，但是当该游戏者依照规则自动再掷点的时候，服务器自动走刚才停于迭子上面的棋子。
+    如果棋子在准备通过虚线时有其他棋子停留在虚线和通往终点线路的交叉点时：A、如果对方是一个棋子，则将该棋子逐回基地，本方棋子继续行进到对岸；B、如果对方是两个棋子重叠则该棋子不能穿越虚线、必须绕行。
+    5) 撞子
+    棋子在行进过程中走至一格时，若已有敌方棋子停留，可将敌方的棋子逐回基地。
+    6) 跳子
+    棋子在地图行走时，如果停留在和自己颜色相同格子，可以向前一个相同颜色格子作跳跃。
+    7) 飞棋
+    棋子若行进到颜色相同而有虚线连接的一格，可照虚线箭头指示的路线，通过虚线到前方颜色相同的的一格后，再跳至下一个与棋子颜色相同的格内；若棋子是由上一个颜色相同的格子跳至颜色相同而有虚线连接的一格内，则棋子照虚线箭头指示的路线，通过虚线到前方颜色相同的的一格后，棋子就不再移动。
+    8) 终点
+    “终点”就是游戏棋子的目的地。当玩家有棋子到达本格时候，表示到达终点，不能再控制该棋子。 玩家要刚好走到终点处才能算“到达”，如果玩家扔出的骰子点数无法刚好走到终点，棋子将往回退多出来的点数。
+     */
+
     public void setPath(int steps){
         for(int i = 1; i <= steps; i++){
-            if(curStep + i >= Commdef.PATH_LENGTH){
-                path.add(Commdef.COLOR_PATH[camp][2 * Commdef.PATH_LENGTH - curStep - i - 2]);
+            if(curStep + i < Commdef.PATH_LENGTH){
+                path.add(Commdef.COLOR_PATH[camp][curStep + i]);
+                if(board.isOverlap(Commdef.COLOR_PATH[camp][curStep + i])){
+                    if(i == steps){
+                        crack.add(Commdef.DOWN_TOGETHER);
+                        break;
+                    }
+                    if (board.getDiceNumber() == 6) {
+                        break;
+                    } else {
+                        // 往回走step-i步
+                        int tempStep = curStep + i;
+                        int count = steps - i;
+                        int direction = -1;     // 往回走还是往前走
+                        while(count > 0){
+                            count--;
+                            if(direction == -1) tempStep--;
+                            else tempStep++;
+                            path.add(Commdef.COLOR_PATH[camp][tempStep]);
+                            if(board.isOverlap(Commdef.COLOR_PATH[camp][tempStep])) direction = -direction;
+                        }
+                        if(board.isOverlap(Commdef.COLOR_PATH[camp][tempStep])) {
+                            crack.add(Commdef.DOWN_TOGETHER);
+                        }
+                        else if(board.hasOtherPlane(Commdef.COLOR_PATH[camp][tempStep])){
+                            crack.add(Commdef.SWEEP_OTHERS);
+                        }
+                        break;
+                    }
+                }
             }
             else{
-                path.add(Commdef.COLOR_PATH[camp][curStep + i]);
-                if(i == steps){
-                    // 最后一步是终点
-                    if(curStep + i == Commdef.PATH_LENGTH - 1){
-                        path.add(portIndex);
-                        status = Commdef.FINISHED;
-                    }
-                    // 最后一步不是终点
-                    else {
-                        crackNum += 1;
-                        int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
-                        // 最后一步是不是大跳
-                        if (isJetGrid(mIndex) == -1) {
-                            // 如果不是大跳，最后一步是不是同色
-                            int jumpIndex = isSameColorGrid(mIndex);
-                            if (jumpIndex != -1) {
-                                path.add(jumpIndex);
-                                crackNum += 1;
-                                // 最后一步是同色，那下一个同色格是不是大跳
-                                if (isJetGrid(jumpIndex) != -1) {
-                                    path.add(isJetGrid(jumpIndex));
-                                    crackNum += 1;
+                // 超过终点往回走step-i+1步
+                for (int j = 1; j <= steps - i + 1; j++) {
+                    path.add(Commdef.COLOR_PATH[camp][curStep + i - j - 1]);
+                }
+                break;
+            }
+
+            // 能到这里说明棋子安全地走到了最后一步,最后一步没有迭子
+            if(i == steps){
+                int mIndex = Commdef.COLOR_PATH[camp][curStep + i];
+                if(board.hasOtherPlane(mIndex)) crack.add(Commdef.SWEEP_OTHERS);
+                // 最后一步是不是大跳
+                int index1 = isJetGrid(mIndex);
+                if (index1 == -1) {
+                    // 如果不是大跳，最后一步是不是同色
+                    int index2 = isSameColorGrid(mIndex);
+                    if (index2 != -1) {
+                        path.add(index2);
+                        if(board.isOverlap(index2)) {
+                            crack.add(Commdef.DOWN_TOGETHER);
+                            break;
+                        }
+                        else if(board.hasOtherPlane(index2)) {
+                            crack.add(Commdef.SWEEP_OTHERS);
+                        }
+                        else if(!crack.isEmpty()){
+                            crack.add(Commdef.NO_CRACK);
+                        }
+                        // 下一个同色格是不是大跳
+                        int index3 = isJetGrid(index2);
+                        if (index3 != -1) {
+                            // 大跳路径上有迭子就不能大跳
+                            if(board.isOverlap(Commdef.COLOR_JET[camp][1])) break;
+                            // 否则
+                            path.add(index3);
+                            // 看交叉点上有没有棋子
+                            if(board.hasOtherPlane(Commdef.COLOR_JET[camp][1])){
+                                if(board.isOverlap(index3)) {
+                                    crack.add(Commdef.JET_CRACK_AND_DOWN_TOGETHER);
+                                    break;
+                                }
+                                else if(board.hasOtherPlane(index3)) {
+                                    crack.add(Commdef.JET_CRACK_AND_SWEEP_OTHERS);
+                                }
+                                else{
+                                    crack.add(Commdef.JET_CRACK);
                                 }
                             }
-                        } else {
-                            // 最后一步是大跳
-                            path.add(isJetGrid(mIndex));
-                            path.add(isSameColorGrid(isJetGrid(mIndex)));
-                            crackNum += 2;
+                            else{
+                                if(board.isOverlap(index3)) {
+                                    crack.add(Commdef.DOWN_TOGETHER);
+                                    break;
+                                }
+                                else if(board.hasOtherPlane(index3)) {
+                                    crack.add(Commdef.SWEEP_OTHERS);
+                                }
+                                else if(!crack.isEmpty()){
+                                    crack.add(Commdef.NO_CRACK);
+                                }
+                            }
                         }
+                    }
+                } else {
+                    // 大跳路径上有迭子就不能大跳
+                    if(board.isOverlap(Commdef.COLOR_JET[camp][1])) break;
+                    // 最后一步是大跳
+                    path.add(index1);
+                    // 大跳时交叉点有棋子
+                    if(board.hasOtherPlane(Commdef.COLOR_JET[camp][1])){
+                        if(board.isOverlap(index1)) {
+                            crack.add(Commdef.JET_CRACK_AND_DOWN_TOGETHER);
+                            break;
+                        }
+                        else if(board.hasOtherPlane(index1)) {
+                            crack.add(Commdef.JET_CRACK_AND_SWEEP_OTHERS);
+                        }
+                        else{
+                            crack.add(Commdef.JET_CRACK);
+                        }
+                    }
+                    else{
+                        if(board.isOverlap(index1)) {
+                            crack.add(Commdef.DOWN_TOGETHER);
+                            break;
+                        }
+                        else if(board.hasOtherPlane(index1)) {
+                            crack.add(Commdef.SWEEP_OTHERS);
+                        }
+                        else if(!crack.isEmpty()){
+                            crack.add(Commdef.NO_CRACK);
+                        }
+                    }
+
+                    int index4 = isSameColorGrid(index1);
+                    path.add(index4);
+                    if(board.isOverlap(index4)) {
+                        crack.add(Commdef.DOWN_TOGETHER);
+                        break;
+                    }
+                    else if(board.hasOtherPlane(index4)) {
+                        crack.add(Commdef.SWEEP_OTHERS);
+                    }
+                    else if(!crack.isEmpty()){
+                        crack.add(Commdef.NO_CRACK);
                     }
                 }
             }
@@ -141,21 +265,38 @@ public class Airplane {
                 planeView.setY(getYFromIndex(index));
                 path.remove(0);
                 // path.size()表示还要走的步数
-                if(path.size() < crackNum){
-                    if(index == Commdef.COLOR_JET[camp][2]){
-                        board.sweepIndex(Commdef.COLOR_JET[camp][1]);
-                        board.sweepIndex(Commdef.COLOR_JET[camp][2]);
-                    }
-                    else{
-                        board.sweepIndex(index);
+                if(path.size() < crack.size()){
+                    int crackType = crack.get(0);
+                    crack.remove(0);
+                    switch (crackType){
+                        case Commdef.NO_CRACK:
+                            break;
+                        case Commdef.SWEEP_OTHERS:
+                            board.sweepOthers(index);
+                            break;
+                        case Commdef.DOWN_TOGETHER:
+                            board.downTogether(index);
+                            break;
+                        case Commdef.JET_CRACK:
+                            board.sweepOthers(Commdef.COLOR_JET[camp][1]);
+                            break;
+                        case Commdef.JET_CRACK_AND_SWEEP_OTHERS:
+                            board.sweepOthers(Commdef.COLOR_JET[camp][1]);
+                            board.sweepOthers(index);
+                            break;
+                        case Commdef.JET_CRACK_AND_DOWN_TOGETHER:
+                            board.sweepOthers(Commdef.COLOR_JET[camp][1]);
+                            board.downTogether(index);
+                            break;
                     }
                 }
                 if(!path.isEmpty()) move();
                 else{
                     curStep = getStepFromIndex(index);
                     path.clear();
-                    crackNum = 0;
+                    crack.clear();
                     board.endTurn();
+                    if(index == Commdef.COLOR_DESTINATION[camp]) finishTask();
                 }
             }
         });
@@ -188,13 +329,13 @@ public class Airplane {
         return yOffset + gridLength * Commdef.POSITIONS[index][1];
     }
 
-    public void getReadyToFly(final int diceNumber){
+    public void getReadyToFly(){
         if(status == Commdef.FINISHED) return;
         planeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 board.forbidClick();
-                receiveDiceNumber(diceNumber);
+                receiveDiceNumber(board.getDiceNumber());
                 planeView.setClickable(false);
             }
         });
@@ -205,8 +346,8 @@ public class Airplane {
         this.status = Commdef.WAITING;
         index = portIndex;
         this.curStep = -1;
-        path = new ArrayList<Integer>();
-        crackNum = 0;
+        path.clear();
+        crack.clear();
         planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
         anim.setDuration(500);
@@ -234,10 +375,39 @@ public class Airplane {
         index = portIndex;
         curStep = -1;
         path.clear();
-        crackNum = 0;
+        crack.clear();
         planeView.setRotation(Commdef.POSITION_ANGLE[index]);
         planeView.setX(getXFromIndex(index));
         planeView.setY(getYFromIndex(index));
+    }
+
+    public void finishTask(){
+        int preIndex = index;
+        this.status = Commdef.FINISHED;
+        index = portIndex;
+        this.curStep = -1;
+        path.clear();
+        crack.clear();
+        planeView.setRotation(Commdef.POSITION_ANGLE[index]);
+        TranslateAnimation anim = new TranslateAnimation(0, getXFromIndex(index) - getXFromIndex(preIndex), 0, getYFromIndex(index) - getYFromIndex(preIndex));
+        anim.setDuration(500);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                planeView.clearAnimation();
+                planeView.setX(getXFromIndex(index));
+                planeView.setY(getYFromIndex(index));
+            }
+        });
+        planeView.startAnimation(anim);
     }
 
     public int getCamp() {

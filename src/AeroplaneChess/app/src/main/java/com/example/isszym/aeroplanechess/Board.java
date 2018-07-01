@@ -79,7 +79,7 @@ public class Board {
         // 随机决定哪方先开始
         Random rand = new Random();
         turn = rand.nextInt(4);
-        showInfo("就决定是你了, " + Commdef.campName[turn]);
+        showInfo("是你了, " + Commdef.campName[turn]);
         winner = -1;
         beginTurn();
     }
@@ -144,7 +144,7 @@ public class Board {
                     showInfo("飞");
                     for (int i : Commdef.COLOR_PLANE[turn]) {
                         if (planes[i].getStatus() != Commdef.FINISHED)
-                            planes[i].getReadyToFly(diceNumber);
+                            planes[i].getReadyToFly();
                     }
                 } else {
                     if (isAllInAirport) {
@@ -159,7 +159,7 @@ public class Board {
                     } else {
                         showInfo("飞");
                         for (Integer i : outsidePlanes) {
-                            planes[i].getReadyToFly(diceNumber);
+                            planes[i].getReadyToFly();
                         }
                         outsidePlanes.clear();
                     }
@@ -177,26 +177,52 @@ public class Board {
                 beginTurn();
             }
             else{
-                turn = (turn + 1) % Commdef.PLAYER_NUM;
+//                turn = (turn + 1) % Commdef.PLAYER_NUM;
                 beginTurn();
             }
         }
     }
 
-    public void sweepIndex(int index){
+    public void sweepOthers(int index){
         for(Airplane plane : planes){
             if(plane.getIndex() == index && plane.getCamp() != turn){
                 showInfo("撞子啦");
                 plane.crackByPlane();
             }
         }
-        return;
+    }
+
+    public void downTogether(int index){
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index){
+                showInfo("撞子啦");
+                plane.crackByPlane();
+            }
+        }
     }
 
     public void forbidClick(){
-        for(int i = 0; i < Commdef.TOTAL_PLANE_NUM; i++){
-            planes[i].getPlaneView().setClickable(false);
+        for(Airplane plane : planes){
+            plane.getPlaneView().setClickable(false);
         }
+    }
+
+    public boolean isOverlap(int index){
+        int planeNum = 0;
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index && plane.getCamp() != turn) {
+                planeNum++;
+                if(planeNum >= 2) return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasOtherPlane(int index){
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index && plane.getCamp() != turn) return true;
+        }
+        return false;
     }
 
     public void showInfo(String sentence){
