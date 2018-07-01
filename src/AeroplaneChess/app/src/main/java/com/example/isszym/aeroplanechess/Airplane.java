@@ -90,6 +90,7 @@ public class Airplane {
                         break;
                     }
                     if (board.getDiceNumber() == 6) {
+                        board.setMarkPlane(number);
                         break;
                     } else {
                         // 往回走step-i步
@@ -336,7 +337,6 @@ public class Airplane {
             public void onClick(View v) {
                 board.forbidClick();
                 receiveDiceNumber(board.getDiceNumber());
-                planeView.setClickable(false);
             }
         });
     }

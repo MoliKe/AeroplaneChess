@@ -28,6 +28,7 @@ public class Board {
     private TextView diceView;
     private int diceNumber;
     private Airplane[] planes;
+    private int markPlane;      // 被标记的飞机，下次自动走
     private int winner;
 
     Board(ImageView boardView, TextView diceView, float screenWidth, Context context){
@@ -71,6 +72,7 @@ public class Board {
     }
 
     public void gameStart(){
+        forbidClick();
         status = Commdef.GAME_START;
         // 还原飞机位置
         for (Airplane plane : planes) {
@@ -80,6 +82,7 @@ public class Board {
         Random rand = new Random();
         turn = rand.nextInt(4);
         showInfo("是你了, " + Commdef.campName[turn]);
+        markPlane = -1;
         winner = -1;
         beginTurn();
     }
@@ -124,44 +127,50 @@ public class Board {
                 diceNumber = rand.nextInt(6) + 1;
                 diceView.setText(String.valueOf(diceNumber));
                 ArrayList<Integer> outsidePlanes = new ArrayList<Integer>();
-                // 是否全在机场
-                boolean isAllInAirport = true;
-                for (int i : Commdef.COLOR_PLANE[turn]) {
-                    if (!planes[i].isInAirport()) {
-                        isAllInAirport = false;
-                        outsidePlanes.add(i);
-                    }
+                if(markPlane != -1){
+                    planes[markPlane].receiveDiceNumber(diceNumber);
+                    markPlane = -1;
                 }
-                // 是否是起飞的点数
-                boolean ableToTakeOff = false;
-                for (int each : Commdef.TAKE_OFF_NUMBER) {
-                    if (each == diceNumber) {
-                        ableToTakeOff = true;
-                        break;
-                    }
-                }
-                if (ableToTakeOff) {
-                    showInfo("飞");
+                else {
+                    // 是否全在机场
+                    boolean isAllInAirport = true;
                     for (int i : Commdef.COLOR_PLANE[turn]) {
-                        if (planes[i].getStatus() != Commdef.FINISHED)
-                            planes[i].getReadyToFly();
-                    }
-                } else {
-                    if (isAllInAirport) {
-                        showInfo("无法起飞");
-                        new Handler().postDelayed(new Runnable() {
-                            public void run() {
-                                turn = (turn + 1) % Commdef.PLAYER_NUM;
-                                beginTurn();
-                            }
-
-                        }, 1000);   // 等待一秒后执行
-                    } else {
-                        showInfo("飞");
-                        for (Integer i : outsidePlanes) {
-                            planes[i].getReadyToFly();
+                        if (!planes[i].isInAirport()) {
+                            isAllInAirport = false;
+                            outsidePlanes.add(i);
                         }
-                        outsidePlanes.clear();
+                    }
+                    // 是否是起飞的点数
+                    boolean ableToTakeOff = false;
+                    for (int each : Commdef.TAKE_OFF_NUMBER) {
+                        if (each == diceNumber) {
+                            ableToTakeOff = true;
+                            break;
+                        }
+                    }
+                    if (ableToTakeOff) {
+                        showInfo("飞");
+                        for (int i : Commdef.COLOR_PLANE[turn]) {
+                            if (planes[i].getStatus() != Commdef.FINISHED)
+                                planes[i].getReadyToFly();
+                        }
+                    } else {
+                        if (isAllInAirport) {
+                            showInfo("无法起飞");
+                            new Handler().postDelayed(new Runnable() {
+                                public void run() {
+                                    turn = (turn + 1) % Commdef.PLAYER_NUM;
+                                    beginTurn();
+                                }
+
+                            }, 1000);   // 等待一秒后执行
+                        } else {
+                            showInfo("飞");
+                            for (Integer i : outsidePlanes) {
+                                planes[i].getReadyToFly();
+                            }
+                            outsidePlanes.clear();
+                        }
                     }
                 }
             }
@@ -281,5 +290,9 @@ public class Board {
         boardParams.width = (int)boardLength;
         boardParams.height = (int)boardLength;
         boardView.setLayoutParams(boardParams);
+    }
+
+    public void setMarkPlane(int number){
+        markPlane = number;
     }
 }
