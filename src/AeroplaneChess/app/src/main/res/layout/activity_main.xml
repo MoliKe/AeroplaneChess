@@ -163,14 +163,11 @@
         android:background="@drawable/yellow"
         android:visibility="gone"
         />
-    <TextView
+    <ImageView
         android:id="@+id/dice"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#CCC"
-        android:gravity="center"
-        android:text="骰子?"
-        android:textSize="24sp"
+        android:background="@drawable/diceanim"
         android:visibility="gone"
         />
 </FrameLayout>

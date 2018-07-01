@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     Board chessboard;
     private ImageView boardView;
     private ImageView[] planeViews;
-    private TextView diceView;
+    private ImageView diceView;
     private TextView[] playerViews;
     private float screenWidth;
 
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         boardView = (ImageView)findViewById(R.id.board);
-        diceView = (TextView)findViewById(R.id.dice);
+        diceView = (ImageView)findViewById(R.id.dice);
         playerViews = new TextView[4];
         playerViews[0] = (TextView)findViewById(R.id.bluePlayer);
         playerViews[1] = (TextView)findViewById(R.id.greenPlayer);
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
 
 
     // 获取屏幕尺寸

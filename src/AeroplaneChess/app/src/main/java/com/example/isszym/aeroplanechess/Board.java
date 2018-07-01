@@ -1,6 +1,7 @@
 package com.example.isszym.aeroplanechess;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.support.v4.app.INotificationSideChannel;
 import android.view.View;
@@ -26,7 +27,7 @@ public class Board {
     private float yOffSet;      // 棋盘在屏幕Y方向即下方向的偏移
     private Context context;
     private ImageView boardView;
-    private TextView diceView;
+    private ImageView diceView;
     private int diceNumber;
     private Airplane[] planes;
     private int markPlane;      // 被标记的飞机，下次自动走，在迭在别人迭子上时用
@@ -34,7 +35,7 @@ public class Board {
     private TextView[] playerViews;
 
 
-    Board(ImageView boardView, TextView diceView, float screenWidth, Context context, TextView[] playerViews){
+    Board(ImageView boardView, ImageView diceView, float screenWidth, Context context, TextView[] playerViews){
         this.status = Commdef.GAME_NOT_START;
         this.screenWidth = screenWidth;
         this.boardView = boardView;
@@ -84,7 +85,7 @@ public class Board {
         // 随机决定哪方先开始
         Random rand = new Random();
         turn = rand.nextInt(4);
-        showInfo("是你了, " + Commdef.campName[turn]);
+        showInfo(Commdef.campName[turn] + "开始");
         markPlane = -1;
         winner = -1;
         beginTurn();
@@ -138,68 +139,84 @@ public class Board {
     }
 
     public void beginTurn(){
-        diceView.setText("骰子?");
+        diceView.setBackgroundResource(R.drawable.diceanim);
         // 调整骰子的位置
         if (turn == Commdef.BLUE || turn == Commdef.GREEN) {
-            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.59));
-            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.25));
+            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.64));
+            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.3));
         } else {
-            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.02));
-            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.25));
+            diceView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 0.07));
+            diceView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.3));
         }
         diceView.setVisibility(View.VISIBLE);
         diceView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 diceView.setClickable(false);
-                Random rand = new Random();
-                diceNumber = rand.nextInt(6) + 1;
-                diceView.setText(String.valueOf(diceNumber));
-                ArrayList<Integer> outsidePlanes = new ArrayList<Integer>();
-                if(markPlane != -1){
-                    planes[markPlane].receiveDiceNumber(diceNumber);
-                    markPlane = -1;
-                }
-                else {
-                    // 是否全在机场
-                    boolean isAllInAirport = true;
-                    for (int i : Commdef.COLOR_PLANE[turn]) {
-                        if (!planes[i].isInAirport()) {
-                            isAllInAirport = false;
-                            outsidePlanes.add(i);
-                        }
-                    }
-                    // 是否是起飞的点数
-                    boolean ableToTakeOff = false;
-                    for (int each : Commdef.TAKE_OFF_NUMBER) {
-                        if (each == diceNumber) {
-                            ableToTakeOff = true;
-                            break;
-                        }
-                    }
-                    if (ableToTakeOff) {
-                        for (int i : Commdef.COLOR_PLANE[turn]) {
-                            if (planes[i].getStatus() != Commdef.FINISHED)
-                                planes[i].getReadyToFly();
-                        }
-                    } else {
-                        if (isAllInAirport) {
-                            showInfo("无法起飞");
-                            new Handler().postDelayed(new Runnable() {
-                                public void run() {
-                                    turn = (turn + 1) % Commdef.PLAYER_NUM;
-                                    beginTurn();
-                                }
+                final AnimationDrawable diceAnim = (AnimationDrawable) diceView.getBackground();
+                diceAnim.start();
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        diceAnim.stop();
+                        Random rand = new Random();
+                        diceNumber = rand.nextInt(6) + 1;
+                        if(diceNumber == 1) diceView.setBackgroundResource(R.drawable.dice1);
+                        else if(diceNumber == 2) diceView.setBackgroundResource(R.drawable.dice2);
+                        else if(diceNumber == 3) diceView.setBackgroundResource(R.drawable.dice3);
+                        else if(diceNumber == 4) diceView.setBackgroundResource(R.drawable.dice4);
+                        else if(diceNumber == 5) diceView.setBackgroundResource(R.drawable.dice5);
+                        else if(diceNumber == 6) diceView.setBackgroundResource(R.drawable.dice6);
 
-                            }, 1000);   // 等待一秒后执行
-                        } else {
-                            for (Integer i : outsidePlanes) {
-                                planes[i].getReadyToFly();
+                        ArrayList<Integer> outsidePlanes = new ArrayList<Integer>();
+                        if(markPlane != -1){
+                            planes[markPlane].receiveDiceNumber(diceNumber);
+                            markPlane = -1;
+                        }
+                        else {
+                            // 是否全在机场
+                            boolean isAllInAirport = true;
+                            for (int i : Commdef.COLOR_PLANE[turn]) {
+                                if (!planes[i].isInAirport()) {
+                                    isAllInAirport = false;
+                                    outsidePlanes.add(i);
+                                }
                             }
-                            outsidePlanes.clear();
+                            // 是否是起飞的点数
+                            boolean ableToTakeOff = false;
+                            for (int each : Commdef.TAKE_OFF_NUMBER) {
+                                if (each == diceNumber) {
+                                    ableToTakeOff = true;
+                                    break;
+                                }
+                            }
+                            if (ableToTakeOff) {
+                                for (int i : Commdef.COLOR_PLANE[turn]) {
+                                    if (planes[i].getStatus() != Commdef.FINISHED)
+                                        planes[i].getReadyToFly();
+                                }
+                            } else {
+                                if (isAllInAirport) {
+                                    showInfo("无法起飞");
+                                    new Handler().postDelayed(new Runnable() {
+                                        public void run() {
+                                            turn = (turn + 1) % Commdef.PLAYER_NUM;
+                                            beginTurn();
+                                        }
+
+                                    }, 1000);   // 等待一秒后执行
+                                } else {
+                                    for (Integer i : outsidePlanes) {
+                                        planes[i].getReadyToFly();
+                                    }
+                                    outsidePlanes.clear();
+                                }
+                            }
                         }
                     }
-                }
+
+                }, 1000);   // 等待一秒后执行
+
+
             }
         });
     }
@@ -308,8 +325,8 @@ public class Board {
         this.yOffSet = yOffSet;
         // 调整骰子大小
         ViewGroup.LayoutParams diceParams = diceView.getLayoutParams();
-        diceParams.width = (int)(yOffSet * 0.55);
-        diceParams.height = (int)(yOffSet * 0.55);
+        diceParams.width = (int)(yOffSet * 0.4);
+        diceParams.height = (int)(yOffSet * 0.4);
         diceView.setLayoutParams(diceParams);
         // 调整玩家信息框的大小
         for(int i = 0; i < 4; i++){
@@ -328,7 +345,7 @@ public class Board {
         this.boardView = boardView;
     }
 
-    public void setDiceView(TextView diceView){
+    public void setDiceView(ImageView diceView){
         this.diceView = diceView;
     }
 
