@@ -29,8 +29,9 @@ public class Board {
     private TextView diceView;
     private int diceNumber;
     private Airplane[] planes;
-    private int markPlane;      // 被标记的飞机，下次自动走
+    private int markPlane;      // 被标记的飞机，下次自动走，在迭在别人迭子上时用
     private int winner;
+
 
     Board(ImageView boardView, TextView diceView, float screenWidth, Context context){
         this.status = Commdef.GAME_NOT_START;
@@ -103,6 +104,38 @@ public class Board {
         else return false;
     }
 
+    public void adjustPosition(int index, int number){
+        int planeNum = 0;
+        float indexX = getXFromIndex(index);
+        float indexY = getYFromIndex(index);
+        for(Airplane plane : planes){
+            if(plane.getIndex() == index && plane.getNumber() != number){
+                float adjustX = 0, adjustY = 0;
+                switch (Commdef.OVERLAP_DIRECTION[index]){
+                    case Commdef.UP:
+                        adjustX = indexX;
+                        adjustY = indexY - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        break;
+                    case Commdef.DOWN:
+                        adjustX = indexX;
+                        adjustY = indexY + Commdef.OVERLAP_DISTANCE * gridLength * planeNum ;
+                        break;
+                    case Commdef.LEFT:
+                        adjustX = indexX - Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        adjustY = indexY;
+                        break;
+                    case Commdef.RIGHT:
+                        adjustX = indexX + Commdef.OVERLAP_DISTANCE * gridLength * planeNum;
+                        adjustY = indexY;
+                        break;
+                }
+                plane.getPlaneView().setX(adjustX);
+                plane.getPlaneView().setY(adjustY);
+                planeNum++;
+            }
+        }
+    }
+
     public void beginTurn(){
         diceView.setText("骰子?");
         // 调整骰子的位置
@@ -150,7 +183,6 @@ public class Board {
                         }
                     }
                     if (ableToTakeOff) {
-                        showInfo("飞");
                         for (int i : Commdef.COLOR_PLANE[turn]) {
                             if (planes[i].getStatus() != Commdef.FINISHED)
                                 planes[i].getReadyToFly();
@@ -166,7 +198,6 @@ public class Board {
 
                             }, 1000);   // 等待一秒后执行
                         } else {
-                            showInfo("飞");
                             for (Integer i : outsidePlanes) {
                                 planes[i].getReadyToFly();
                             }

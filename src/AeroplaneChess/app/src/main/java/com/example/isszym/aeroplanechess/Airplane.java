@@ -9,6 +9,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Airplane {
@@ -58,6 +59,7 @@ public class Airplane {
         else steps = diceNumber;
         status = Commdef.FLYING;
         setPath(steps);
+        board.adjustPosition(index, number);
         move();
     }
 
@@ -250,7 +252,7 @@ public class Airplane {
     public void move(){
         index = path.get(0);
         planeView.setRotation(Commdef.POSITION_ANGLE[index]);
-        if(path.size() == 1){
+        if(path.size() == 1 && (crack.isEmpty() || crack.get(0) == Commdef.NO_CRACK)){
             int planeNum = board.planeNumOnIndex(index);
             if(planeNum > 1){
                 switch (Commdef.OVERLAP_DIRECTION[index]){
@@ -335,8 +337,8 @@ public class Airplane {
                     curStep = getStepFromIndex(index);
                     path.clear();
                     crack.clear();
-                    board.endTurn();
                     if(index == Commdef.COLOR_DESTINATION[camp]) finishTask();
+                    board.endTurn();
                 }
             }
         });
