@@ -15,6 +15,14 @@ public class Commdef {
             "黄方阵营",
     };
 
+    // 游戏类型 （单机，联网）
+    public static final int LOCAL_GAME = 0;
+    public static final int ONLINE_GAME = 1;
+
+    // 玩家类型
+    public static final int HUMAN = 0;
+    public static final int AI = 1;
+
     // 碰撞类型
     public static final int NO_CRACK = 0;
     public static final int SWEEP_OTHERS = 1;
@@ -37,8 +45,8 @@ public class Commdef {
             {12, 13, 14, 15}    // 黄
     };
 
+    // 玩家数目
     public static final int PLAYER_NUM = 4;
-
 
     // 飞机数目
     public static final int TOTAL_PLANE_NUM = 16;
@@ -107,13 +115,16 @@ public class Commdef {
             0
     };
 
+    // 迭子是两个棋子之间相差的格子数
     public static final float OVERLAP_DISTANCE = 0.5f;
 
+    // 迭子方向
     public static final int UP = 0;
     public static final int DOWN = 1;
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
 
+    // 每个位置的迭子方向
     public static final int[] OVERLAP_DIRECTION = {
             UP, UP, UP, UP, LEFT,
             UP, UP, UP, UP, UP,
@@ -232,7 +243,7 @@ public class Commdef {
     // 各色的终点
     public static final int[] COLOR_DESTINATION = {77, 83, 89, 95};
 
-    // 各种颜色路径的长度
+    // 各色路径的长度
     public static final int PATH_LENGTH = 57;
 
 }

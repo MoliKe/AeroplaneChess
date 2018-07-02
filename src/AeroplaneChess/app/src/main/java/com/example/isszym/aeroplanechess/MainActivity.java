@@ -26,15 +26,18 @@ public class MainActivity extends AppCompatActivity {
     private ImageView boardView;
     private ImageView[] planeViews;
     private ImageView diceView;
+    private TextView tipView;
     private TextView[] playerViews;
     private float screenWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 加载资源
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         boardView = (ImageView)findViewById(R.id.board);
         diceView = (ImageView)findViewById(R.id.dice);
+        tipView = (TextView)findViewById(R.id.tip);
         playerViews = new TextView[4];
         playerViews[0] = (TextView)findViewById(R.id.bluePlayer);
         playerViews[1] = (TextView)findViewById(R.id.greenPlayer);
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         screenWidth = getScreenW(getApplicationContext());
 
-        chessboard = new Board(boardView, diceView, screenWidth, getApplicationContext(), playerViews);
+        chessboard = new Board(boardView, diceView, tipView, screenWidth, playerViews);
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
         planeViews[1] = (ImageView)findViewById(R.id.bluePlane2);
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         planeViews[14] = (ImageView)findViewById(R.id.yellowPlane3);
         planeViews[15] = (ImageView)findViewById(R.id.yellowPlane4);
 
-        //增加整体布局监听,获取棋盘在屏幕中的偏移量
+        //增加整体布局监听,获取棋盘在屏幕中的偏移量,因为在onCreate中board未完成渲染
         ViewTreeObserver vto = chessboard.getBoardView().getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
             @Override
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 chessboard.setXOffSet(xOffSet);
                 chessboard.setYOffSet(yOffSet);
 
+                // 初始化飞机
                 chessboard.initPlanes(planeViews);
 
                 chessboard.getBoardView().getViewTreeObserver().removeOnGlobalLayoutListener(this);

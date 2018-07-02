@@ -170,6 +170,18 @@
         android:background="@drawable/diceanim"
         android:visibility="gone"
         />
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:background="#0FFF"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:typeface="sans"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:visibility="gone"/>
 </FrameLayout>
 
 
