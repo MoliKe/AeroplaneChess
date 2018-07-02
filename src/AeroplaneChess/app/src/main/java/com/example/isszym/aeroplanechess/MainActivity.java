@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView boardView;
     private ImageView[] planeViews;
     private ImageView diceView;
+    private ImageView arrowView;
     private TextView tipView;
     private TextView[] playerViews;
     private float screenWidth;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         boardView = (ImageView)findViewById(R.id.board);
         diceView = (ImageView)findViewById(R.id.dice);
+        arrowView = (ImageView)findViewById(R.id.arrow);
         tipView = (TextView)findViewById(R.id.tip);
         playerViews = new TextView[4];
         playerViews[0] = (TextView)findViewById(R.id.bluePlayer);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         screenWidth = getScreenW(getApplicationContext());
 
-        chessboard = new Board(boardView, diceView, tipView, screenWidth, playerViews);
+        chessboard = new Board(boardView, diceView, arrowView, tipView, screenWidth, playerViews);
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
         planeViews[1] = (ImageView)findViewById(R.id.bluePlane2);

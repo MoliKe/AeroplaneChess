@@ -170,6 +170,13 @@
         android:background="@drawable/diceanim"
         android:visibility="gone"
         />
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/arrow"
+        android:visibility="gone"
+        />
     <TextView
         android:id="@+id/tip"
         android:layout_width="0dp"

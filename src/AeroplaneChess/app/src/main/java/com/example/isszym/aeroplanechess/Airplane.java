@@ -416,12 +416,12 @@ public class Airplane {
     // 等待被点击飞行
     public void getReadyToFly(){
         // 做一个不断重复的缩放动画，告诉玩家可以移动的棋子
-        ScaleAnimation animation =new ScaleAnimation(1.0f, 1.2f, 1.0f, 1.2f, Animation.ABSOLUTE, planeView.getX()+gridLength, Animation.ABSOLUTE, planeView.getY()+gridLength);
-        animation.setDuration(500);     //设置动画持续时间
-        animation.setRepeatCount(-1);   //设置重复次数，-1无限循环
-        animation.setRepeatMode(Animation.REVERSE); // 逆序重复
-        animation.setFillAfter(false);              // 不用停在最后一帧
-        planeView.startAnimation(animation);
+        ScaleAnimation scaleAnim = new ScaleAnimation(1.0f, 1.2f, 1.0f, 1.2f, Animation.ABSOLUTE, planeView.getX()+gridLength, Animation.ABSOLUTE, planeView.getY()+gridLength);
+        scaleAnim.setDuration(500);     //设置动画持续时间
+        scaleAnim.setRepeatCount(-1);   //设置重复次数，-1无限循环
+        scaleAnim.setRepeatMode(Animation.REVERSE); // 逆序重复
+        scaleAnim.setFillAfter(false);              // 不用停在最后一帧
+        planeView.startAnimation(scaleAnim);
         planeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

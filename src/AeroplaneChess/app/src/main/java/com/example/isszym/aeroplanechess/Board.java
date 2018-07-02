@@ -27,21 +27,23 @@ public class Board {
     private float yOffSet;          // 棋盘在屏幕Y方向即下方向的偏移
     private ImageView boardView;    // 棋盘view
     private ImageView diceView;     // 骰子view
+    private ImageView arrowView;    // 指示当前回合的箭头
+    private TextView tipView;       // 提示view
     private int diceNumber;         // 骰子点数
     private Airplane[] planes;      // 16架飞机
     private int markPlane;          // 被标记的飞机，下次自动走，在迭在别人迭子上时用
     private int winner;             // 胜利者
     private TextView[] playerViews; // 4个玩家信息view
-    private TextView tipView;       // 提示view
     private int gameType;           // 游戏类型，单机、联网
     private int[] playerType;       // 四个玩家类型，人类、AI
     private int myCamp;             // 自己阵营
 
-    Board(ImageView boardView, ImageView diceView, TextView tipView, float screenWidth, TextView[] playerViews){
+    Board(ImageView boardView, ImageView diceView, ImageView arrowView, TextView tipView, float screenWidth, TextView[] playerViews){
         this.status = Commdef.GAME_NOT_START;
         this.screenWidth = screenWidth;
         this.boardView = boardView;
         this.diceView = diceView;
+        this.arrowView = arrowView;
         this.tipView = tipView;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
@@ -185,9 +187,31 @@ public class Board {
             }
             // 当前回合是玩家
             else{
+                // 调整箭头位置
+                if (turn == Commdef.BLUE || turn == Commdef.GREEN) {
+                    arrowView.setX((float)(playerViews[turn].getX() + playerViews[turn].getWidth() * 1.01));
+                    arrowView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.3));
+                    arrowView.setRotationY(0);
+                } else {
+                    arrowView.setX((float)(playerViews[turn].getX() - playerViews[turn].getWidth() * 0.29));
+                    arrowView.setY((float)(playerViews[turn].getY() + playerViews[turn].getHeight() * 0.3));
+                    arrowView.setRotationY(180);
+                }
+                arrowView.setVisibility(View.VISIBLE);
+                // 做一个动画让箭头不断缩放
+                ScaleAnimation arrowAnim = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f, Animation.ABSOLUTE, (float)(arrowView.getX()+arrowView.getWidth() * 0.5), Animation.ABSOLUTE, (float)(arrowView.getY()+arrowView.getHeight() * 0.5));
+                arrowAnim.setDuration(500);     //设置动画持续时间
+                arrowAnim.setRepeatCount(-1);   //设置重复次数，-1无限循环
+                arrowAnim.setRepeatMode(Animation.REVERSE); // 逆序重复
+                arrowAnim.setFillAfter(false);              // 不用停在最后一帧
+                arrowView.startAnimation(arrowAnim);
+
                 diceView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // 箭头消失
+                        arrowView.clearAnimation();
+                        arrowView.setVisibility(View.GONE);
                         // 这回合内禁止再点击骰子
                         diceView.setClickable(false);
                         // 在骰子view载入逐帧动画来达到转骰子效果
@@ -394,6 +418,11 @@ public class Board {
         diceParams.width = (int)(yOffSet * 0.4);
         diceParams.height = (int)(yOffSet * 0.4);
         diceView.setLayoutParams(diceParams);
+        // 调整箭头大小
+        ViewGroup.LayoutParams arrowParams = arrowView.getLayoutParams();
+        arrowParams.width = (int)(yOffSet * 0.4);
+        arrowParams.height = (int)(yOffSet * 0.4);
+        arrowView.setLayoutParams(arrowParams);
         // 调整玩家信息框的大小
         for(int i = 0; i < 4; i++){
             ViewGroup.LayoutParams playerParams = playerViews[i].getLayoutParams();
