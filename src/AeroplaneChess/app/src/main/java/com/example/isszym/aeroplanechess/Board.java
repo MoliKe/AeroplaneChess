@@ -1,19 +1,14 @@
 package com.example.isszym.aeroplanechess;
 
-import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.SoundPool;
 import android.os.Handler;
-import android.support.v4.app.INotificationSideChannel;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +90,7 @@ public class Board {
 
     // 开始游戏
     public void gameStart(){
+        playSound(Commdef.GAME_START_SOUND);
         // 禁止点击棋子
         forbidClick();
         // 初始化游戏类型，玩家类型
@@ -399,8 +395,7 @@ public class Board {
 
     // 播放音效
     public void playSound(int soundId){
-        return;
-//        int streamID = sp.play(soundMap.get(soundId), 0.8f, 0.8f, 1, 0, 1.0f);
+        int streamID = sp.play(soundMap.get(soundId), 0.8f, 0.8f, 1, 0, 1.0f);
     }
 
     public int getDiceNumber(){
