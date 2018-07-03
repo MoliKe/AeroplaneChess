@@ -2,6 +2,8 @@ package com.example.isszym.aeroplanechess;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity {
     Board chessboard;
     private ImageView boardView;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tipView;
     private TextView[] playerViews;
     private float screenWidth;
+    SoundPool sp;
+    HashMap<Integer, Integer> soundMap = new HashMap<Integer, Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +52,20 @@ public class MainActivity extends AppCompatActivity {
         playerViews[2] = (TextView)findViewById(R.id.redPlayer);
         playerViews[3] = (TextView)findViewById(R.id.yellowPlayer);
 
+        // 加载音效
+        sp = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+        soundMap.put(Commdef.ONE_STEP_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.JUMP_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.JET_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.CRACK_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.PLANE_FINISH_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.GAME_START_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.GAME_END_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+        soundMap.put(Commdef.DICE_SOUND, sp.load(getApplicationContext(), R.raw.test, 1));
+
         screenWidth = getScreenW(getApplicationContext());
 
-        chessboard = new Board(boardView, diceView, arrowView, tipView, screenWidth, playerViews);
+        chessboard = new Board(boardView, diceView, arrowView, tipView, screenWidth, playerViews, sp, soundMap);
         planeViews = new ImageView[16];
         planeViews[0] = (ImageView)findViewById(R.id.bluePlane1);
         planeViews[1] = (ImageView)findViewById(R.id.bluePlane2);

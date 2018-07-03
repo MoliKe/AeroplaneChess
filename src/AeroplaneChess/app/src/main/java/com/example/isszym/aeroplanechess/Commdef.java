@@ -15,6 +15,17 @@ public class Commdef {
             "黄方阵营",
     };
 
+    // 游戏音效
+    public static final int ONE_STEP_SOUND = 0;
+    public static final int JUMP_SOUND = 1;
+    public static final int JET_SOUND = 2;
+    public static final int CRACK_SOUND = 3;
+    public static final int PLANE_FINISH_SOUND = 4;
+    public static final int GAME_START_SOUND = 5;
+    public static final int GAME_END_SOUND = 6;
+    public static final int DICE_SOUND = 7;
+
+
     // 游戏类型 （单机，联网）
     public static final int LOCAL_GAME = 0;
     public static final int ONLINE_GAME = 1;

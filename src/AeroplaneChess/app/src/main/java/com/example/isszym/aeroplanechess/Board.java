@@ -2,6 +2,7 @@ package com.example.isszym.aeroplanechess;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.SoundPool;
 import android.os.Handler;
 import android.support.v4.app.INotificationSideChannel;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Board {
@@ -34,17 +36,21 @@ public class Board {
     private int markPlane;          // 被标记的飞机，下次自动走，在迭在别人迭子上时用
     private int winner;             // 胜利者
     private TextView[] playerViews; // 4个玩家信息view
+    private SoundPool sp;           // 音效池
+    private HashMap<Integer, Integer> soundMap; // 音效类型到音效id的映射
     private int gameType;           // 游戏类型，单机、联网
     private int[] playerType;       // 四个玩家类型，人类、AI
     private int myCamp;             // 自己阵营
 
-    Board(ImageView boardView, ImageView diceView, ImageView arrowView, TextView tipView, float screenWidth, TextView[] playerViews){
+    Board(ImageView boardView, ImageView diceView, ImageView arrowView, TextView tipView, float screenWidth, TextView[] playerViews, SoundPool sp, HashMap<Integer, Integer> soundMap){
         this.status = Commdef.GAME_NOT_START;
         this.screenWidth = screenWidth;
         this.boardView = boardView;
         this.diceView = diceView;
         this.arrowView = arrowView;
         this.tipView = tipView;
+        this.sp = sp;
+        this.soundMap = soundMap;
         boardLength = (int)(screenWidth / 18) * 18;
         gridLength = boardLength / 36;
         // 调整棋盘大小
@@ -389,6 +395,12 @@ public class Board {
             }
 
         }, 1000);   // 等待一秒后执行
+    }
+
+    // 播放音效
+    public void playSound(int soundId){
+        return;
+//        int streamID = sp.play(soundMap.get(soundId), 0.8f, 0.8f, 1, 0, 1.0f);
     }
 
     public int getDiceNumber(){
