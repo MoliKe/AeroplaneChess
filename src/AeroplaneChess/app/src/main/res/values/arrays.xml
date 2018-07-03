@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="room">
+        <item>room1</item>
+        <item>room2</item>
+        <item>room3</item>
+        <item>room4</item>
+        <item>room5</item>
+        <item>room6</item>
+        <item>room6</item>
+        <item>room6</item>
+        <item>room6</item>
+        <item>room6</item>
+        <item>room6</item>
+        <item>room6</item>
+    </string-array>
+
+    <string-array name="video">
+        <item>video1</item>
+        <item>video2</item>
+        <item>video3</item>
+        <item>video4</item>
+        <item>video5</item>
+        <item>video6</item>
+        <item>video6</item>
+        <item>video6</item>
+        <item>video6</item>
+        <item>video6</item>
+        <item>video6</item>
+        <item>video6</item>
+    </string-array>
+
+</resources>
+
+
+
+
